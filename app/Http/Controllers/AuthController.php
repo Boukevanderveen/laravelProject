@@ -66,10 +66,12 @@ class AuthController extends Controller
             if(User::count() < 1)
             {
                 $User->isAdmin = 1;
+                $User->isOwner = 1;
             }
             else
             {
                 $User->isAdmin = 0;
+                $User->isOwner = 0;
             }
             $User->save();
 
