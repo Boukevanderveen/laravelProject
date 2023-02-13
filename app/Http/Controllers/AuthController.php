@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Article;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -47,22 +49,28 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',   // required and email format validation
-            'password' => 'required|min:8', // required and number field validation
+            'password' => 'required|min:6', // required and number field validation
             'confirm_password' => 'required|same:password',
 
         ]); // create the validations
         if ($validator->fails())
         {
-
             return back()->withInput()->withErrors($validator);
-
-
-        } else {
-
+        } 
+        else
+        {
             $User = new User;
             $User->name = $request->name;
             $User->email = $request->email;
             $User->password = bcrypt($request->password);
+            if(User::count() < 1)
+            {
+                $User->isAdmin = 1;
+            }
+            else
+            {
+                $User->isAdmin = 0;
+            }
             $User->save();
 
             return redirect("login")->with('success', 'You have successfully registered, Login to access your dashboard');
@@ -74,5 +82,11 @@ class AuthController extends Controller
     {
         \Auth::logout();
         return redirect("login")->with('success', 'Logout successfully');;
+    }
+
+    function navigateToDashboard()
+    {
+        $articles = Article::All();
+        return view('dashboard', ['articles' => $articles]);
     }
 }
