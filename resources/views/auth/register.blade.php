@@ -2,7 +2,7 @@
 <head>
 </head>
 <body>
-            <form method="post" name="postform" action="finishregister">
+            <form method="post" name="postform" action="/finishregister">
               <div class="form-group">
                 <label>Name</label>
                 <input type="text" name="name" value="{{old('name')}}" class="form-control" />
@@ -23,6 +23,7 @@
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">registeren</button>
               </div>
+            </form>
     <a href="/login">Inloggen </a>
 
 </body>
