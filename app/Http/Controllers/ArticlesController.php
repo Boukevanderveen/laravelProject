@@ -55,7 +55,6 @@ class ArticlesController extends Controller
             $Articles->content = $request->content;
             $author = Auth::user()->name;
             $Articles->author = $author;
-            $Articles->authorid = Auth::user()->id;
 
             $Articles->save();
 
