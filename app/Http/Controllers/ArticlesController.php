@@ -4,13 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ArticlesController extends Controller
 {
-    function createArticle(Request $request)
+    function dashboardView()
+    {
+        $articles = Article::All();
+
+        return view('dashboard', ['articles' => $articles]);
+    }
+
+    function articleView($id)
+    {
+        $article = Article::where('id', $id)->get();
+
+        return view('article', ['article' => $article]);
+    }
+
+    function editView($id)
+    {
+        $article = Article::where('id', $id)->get();
+        return view('editarticle', ['article' => $article]);
+    }
+
+    function createView()
+    {
+        return view('createarticle');
+    }
+
+    function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:5',
@@ -29,27 +55,21 @@ class ArticlesController extends Controller
             $Articles->content = $request->content;
             $author = Auth::user()->name;
             $Articles->author = $author;
+            $Articles->authorid = Auth::user()->id;
 
             $Articles->save();
 
-            return redirect('/');   
+            return redirect('');   
         }
     }
 
-    function baseRedirect()
+    function delete(Request $request)
     {
-        $articles = DB::table("articles")->where("author", "=", "iemand")->get();
-           
-        return view('dashboard', ['articles' => $articles]);
-    }
+        $query = Article::where('id', $request->articleid)->delete();
 
-    function deleteArticle(Request $request)
-    {
-        $query = DB::table('articles')->where('id', $request->articleid)->delete();
         if($query)
         {
-            $articles = Article::All();
-            return redirect('/');
+            return redirect('');
         }
         else
         {
@@ -57,32 +77,16 @@ class ArticlesController extends Controller
         }
     }
 
-    function openArticle($id)
+    function edit(Request $request)
     {
-            $article = DB::table('articles')->where('id', $id)->get();
-            return view('article', ['article' => $article]);
-    }
+        $query = Article::where('id', $request->id)->update(['title' => $request->title, 'description' => $request->description, 'content' => $request->content]);
 
-    function openEditArticle($id)
-    {
-            $article = DB::table('articles')->where('id', $id)->get();
-            return view('editarticle', ['article' => $article]);
-    }
-
-    function openCreateArticle()
-    {
-            return view('createarticle');
-    }
-
-    function editArticle(Request $request)
-    {
-            $query = DB::table('articles')->where('id', $request->id)->update(['title' => $request->title, 'description' => $request->description, 'content' => $request->content]);
-            if($query)
-            {
-            return redirect('/article/'.$request->id.'');
-            }
-            else
-            {
-            }
+        if($query)
+        {
+        return redirect('/article/'.$request->id.'');
+        }
+        else
+        {
+        }
     }
 }

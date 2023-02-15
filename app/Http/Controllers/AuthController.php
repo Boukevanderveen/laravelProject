@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Article;
 use Illuminate\Support\Facades\DB;
+use Auth;
 
 class AuthController extends Controller
 {
@@ -20,7 +21,7 @@ class AuthController extends Controller
         return view("auth.register");
     }
 
-    function finishLogin(Request $request)
+    function login(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
@@ -36,7 +37,7 @@ class AuthController extends Controller
 
         } else {
             //validations are passed try login using laravel auth attemp
-            if (\Auth::attempt($request->only(["email", "password"]))) {
+            if (Auth::attempt($request->only(["email", "password"]))) {
                 return redirect("dashboard")->with('success', 'Login Successful');
             } else {
                 return back()->withErrors( "Invalid credentials"); // auth fail redirect with error
@@ -44,7 +45,7 @@ class AuthController extends Controller
         }
     }
 
-    function finishRegister(Request $request)
+    function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -79,11 +80,10 @@ class AuthController extends Controller
         }
     }
 
-
     function logout()
     {
-        \Auth::logout();
-        return redirect("login")->with('success', 'Logout successfully');;
+        Auth::logout();
+        return redirect("dashboard")->with('success', 'Logout successfully');;
     }
 
     function navigateToDashboard()

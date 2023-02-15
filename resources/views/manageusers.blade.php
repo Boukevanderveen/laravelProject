@@ -4,6 +4,7 @@
 
     <table>
     @foreach ($users as $user)
+    @if (Auth::user()->can('update', $user))
     <tbody>
         <tr>
                 {{ $user->name }}
@@ -24,6 +25,11 @@
         </tr>
         <br>
     </tbody>
+    @else
+    <script>
+        window.location.href = "/";
+    </script>
+@endif
 @endforeach
 </table>
 <head>

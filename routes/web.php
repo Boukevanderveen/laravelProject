@@ -18,33 +18,33 @@ use App\Models\User;
 |
 */
 
-Route::get('/secondpage', function () {
-    return view('secondpage');
-});
+// Auth controller
 
-Route::get('/newrecord', function () {
-    return view('newrecord');
-});
-
-// GET
-
-Route::get('/', [AuthController::class, 'navigateToDashboard']);
-Route::get('dashboard', [AuthController::class, 'navigateToDashboard']);
 Route::get('login', [AuthController::class, 'loginView']);
 Route::get('register', [AuthController::class, 'registerView']);
-Route::get('/logout', [AuthController::class,"logout"]);
-Route::get('/article/{id?}', [ArticlesController ::class, 'openArticle']);
-Route::get('/article/{id?}/edit', [ArticlesController::class, 'openEditArticle']);
-Route::get('/article/{id?}/edit', [ArticlesController::class, 'openEditArticle']);
-Route::get('/manageusersview', [UsersController ::class, 'openManageUser']);
-Route::get('/createarticleview', [ArticlesController ::class, 'openCreateArticle']);
+Route::get('logout', [AuthController ::class, 'logout']);
 
-// POST
+Route::post('/finishlogin', [AuthController::class,"login"]);
+Route::post('/finishregister', [AuthController::class,"register"]);
 
-Route::post('/finishlogin', [AuthController::class,"finishLogin"]);
-Route::post('/finishregister', [AuthController::class,"finishRegister"]);
-Route::post('/deletearticle', [ArticlesController ::class, 'deleteArticle']);
-Route::post('/editarticle', [ArticlesController ::class, 'editArticle']);
+
+// Articles controller
+
+Route::get('', [ArticlesController::class, 'dashboardView']);
+Route::get('dashboard', [ArticlesController::class, 'dashboardView']);
+Route::get('/article/{id}', [ArticlesController ::class, 'articleView']);
+Route::get('/article/{id}/edit', [ArticlesController::class, 'editView']);
+Route::get('/createarticle', [ArticlesController ::class, 'createView']);
+
+Route::post('/deletearticle', [ArticlesController ::class, 'delete']);
+Route::post('/editarticle', [ArticlesController ::class, 'edit']);
+Route::post('/createarticle', [ArticlesController ::class, 'create']);
+
+
+// Users controller
+
+Route::get('/manageusersview', [UsersController ::class, 'manageUserView']);
+
 Route::post('/removeadmin', [UsersController ::class, 'removeAdmin']);
 Route::post('/makeadmin', [UsersController ::class, 'makeAdmin']);
-Route::post('/createarticle', [ArticlesController ::class, 'createArticle']);
+

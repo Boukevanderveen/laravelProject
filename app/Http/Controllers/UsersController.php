@@ -11,26 +11,26 @@ use Auth;
 
 class UsersController extends Controller
 {
-    function openManageUser()
+    function manageUserView()
     {
     if(Auth::Check())
     {
         if (Auth::user()->isAdmin == 1)
         {
-            $users = DB::table("users")->get();
+            $users = User::All();
            
             return view('manageusers', ['users' => $users]);
         }
         else
         {
-            $articles = DB::table("articles")->where("author", "=", "iemand")->get();
+            $articles = Article::All();
            
             return view('dashboard', ['articles' => $articles]);
         }
     }
     else
     {
-        $articles = DB::table("articles")->where("author", "=", "iemand")->get();
+        $articles = Article::All();
            
         return view('dashboard', ['articles' => $articles]);  
     }
@@ -38,7 +38,7 @@ class UsersController extends Controller
 
     function removeAdmin(Request $request)
     {
-        $query = DB::table('users')->where('id', $request->id)->update(['isAdmin' => 0]);
+        $query = User::where('id', $request->id)->update(['isAdmin' => 0]);
         if($query)
         {
         return redirect('/manageusersview');
@@ -51,7 +51,7 @@ class UsersController extends Controller
 
     function makeAdmin(Request $request)
     {
-        $query = DB::table('users')->where('id', $request->id)->update(['isAdmin' => 1]);
+        $query = User::where('id', $request->id)->update(['isAdmin' => 1]);
         if($query)
         {
         return redirect('/manageusersview');
