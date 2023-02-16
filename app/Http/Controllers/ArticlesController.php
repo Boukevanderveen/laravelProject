@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 class ArticlesController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Article::class, 'Article');
+    }
+
     function dashboardView()
     {
         $articles = Article::All();

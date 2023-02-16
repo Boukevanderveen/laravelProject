@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\UsersController;
-use App\Events\formSubmitted;
+use App\Http\Controllers\ProjectsController;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 /*
@@ -47,4 +47,11 @@ Route::get('/manageusersview', [UsersController ::class, 'manageUserView']);
 
 Route::post('/removeadmin', [UsersController ::class, 'removeAdmin']);
 Route::post('/makeadmin', [UsersController ::class, 'makeAdmin']);
+
+// Projects controller
+Route::get('/projects', [ProjectsController ::class, 'view']);
+Route::get('/createproject', [ProjectsController ::class, 'createView']);
+
+Route::post('/createproject', [ProjectsController ::class, 'create']);
+
 
