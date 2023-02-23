@@ -1,9 +1,8 @@
 <!doctype html>
 <html lang="en">
-    @if (Auth::user()->can('create', $project))
 
     @include('navbar')
-
+    <div class="container">
     <head>
 
         @if ($errors->any())
@@ -28,7 +27,7 @@
         <script src="/js/app.js"></script>
 
     <body>
-        <form method="post" name="projectform" action="/createproject">
+        <form method="post" name="projectform" action="/projects/createproject">
             <div class="form-group">
                 <label for="inputTitle">Naam</label>
                 <input type="text" name="name" class="form-control" id="inputTitle" placeholder="Enter title">
@@ -42,12 +41,7 @@
             <button type="submit" class="btn btn-primary">Submit</button>
             @csrf
         </form>
+        <a href="/home/projects"><button class="btn btn-secondary">Annuleer</button></a>
         </head>
     </body>
-@else
-    <script>
-        window.location.href = "/";
-    </script>
-@endif
-
 </html>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
-@include('auth.authcheck')
+<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+@include('users.authcheck')
 @include('navbar')
-@if(Auth::Check())
-<div class='dash'>Je bent ingelogt als: {{ Auth::user()->name }}, <a href="{{ url('logout') }}"> uitloggen</a></div>
+@if (Auth::Check())
+    <div class='dash'>Je bent ingelogt als: {{ Auth::user()->name }}, <a href="{{ url('logout') }}"> uitloggen</a></div>
 @endif
 <table>
     @if (!is_null($articles))
@@ -14,21 +15,21 @@
                         {{ $article->title }}
                         {{ $article->description }}
                         {{ $article->author }}
-                        <a href="/article/{{ $article->id }}"><button type="submit">Lees artikel</button> </a>
+                        <a href="/articles/article/{{ $article->id }}"><button type="submit">Lees artikel</button> </a>
                     </td>
                 </tr>
             </tbody>
         @endforeach
     @endif
 </table>
-
+gtrfe
 <head>
     @can('create', $article)
-        <a href="/createarticle">New Article</a> <br>
+        <a href="articles/createarticle">New Article</a> <br>
     @endcan
-    
+
     @can('manageUsers', $article)
-        <a href="/manageusersview">Manage Users</a>
+        <a href="/users/manageusersview">Manage Users</a>
     @endcan
 </head>
 

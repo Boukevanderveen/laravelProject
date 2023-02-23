@@ -9,14 +9,14 @@
         <tr>
                 {{ $user->name }}
                 @if($user->isAdmin == 1 && $user->isOwner == 0 && $user->name !== Auth::user()->name)
-                <form method="POST" action="/removeadmin">
+                <form method="POST" action="/users/removeadmin">
                     <input type="hidden" name="id" value={{$user->id}}>
                     <button type="submit">Verwijder admin privileges</button>
                     @csrf
                 </form>
                 @endif
                 @if($user->isAdmin == 0 && $user->isOwner == 0)
-                <form method="POST" action="/makeadmin">
+                <form method="POST" action="/users/makeadmin">
                     <input type="hidden" name="id" value={{$user->id}}>
                     <button type="submit">Geef admin privileges</button>
                     @csrf

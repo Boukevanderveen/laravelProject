@@ -13,12 +13,12 @@ class AuthController extends Controller
 {
     function loginView()
     {
-        return view("auth.login");
+        return view("users.login");
     }
 
     function registerView()
     {
-        return view("auth.register");
+        return view("users.register");
     }
 
     function login(Request $request)
@@ -38,7 +38,7 @@ class AuthController extends Controller
         } else {
             //validations are passed try login using laravel auth attemp
             if (Auth::attempt($request->only(["email", "password"]))) {
-                return redirect("dashboard")->with('success', 'Login Successful');
+                return redirect('articles/')->with('success', 'Login Successful');
             } else {
                 return back()->withErrors( "Invalid credentials"); // auth fail redirect with error
             }
@@ -83,7 +83,7 @@ class AuthController extends Controller
     function logout()
     {
         Auth::logout();
-        return redirect("dashboard")->with('success', 'Logout successfully');;
+        return redirect("/home")->with('success', 'Logout successfully');;
     }
 
     function navigateToDashboard()

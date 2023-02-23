@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-@include('auth.authcheck')
+@include('users.authcheck')
 @include('navbar')
 @if(Auth::Check())
 <div class='dash'>Je bent ingelogt als: {{ Auth::user()->name }}, <a href="{{ url('logout') }}"> uitloggen</a></div>
@@ -17,16 +17,14 @@
                     </td>
                 </tr>
             </tbody>
+            <br>
+            <a href="/projects/project/{{ $project->id }}"><button type="submit">Open Project</button></a>
         @endforeach
     @endif
 </table>
-
+<br>
+<a href="/projects/createproject">Nieuw Project</a> <br>
 <head>
-    @foreach ($projects as $project)
-    @if (Auth::user()->can('create', $project))
-    <a href="/createproject">Nieuw Project</a> <br>
-    @endif
-    @endforeach
 </head>
 
 </html>

@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Article;
 use App\Models\User;
+use Auth;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ArticlePolicy
@@ -16,8 +17,10 @@ class ArticlePolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
+
     public function viewAny(User $user)
     {
+        return true;
     }
 
     /**
@@ -29,7 +32,7 @@ class ArticlePolicy
      */
     public function view(User $user, Article $article)
     {
-
+        return true;
     }
 
     /**

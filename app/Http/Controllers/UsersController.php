@@ -11,54 +11,57 @@ use Auth;
 
 class UsersController extends Controller
 {
-    function manageUserView()
+    function manageUserView(User $user)
     {
-    if(Auth::Check())
-    {
-        if (Auth::user()->isAdmin == 1)
+        if (auth()->user()->can('update', $user)) 
         {
             $users = User::All();
            
-            return view('manageusers', ['users' => $users]);
+            return view('/users/manageusers', ['users' => $users]);
         }
         else
-        {
-            $articles = Article::All();
-           
-            return view('dashboard', ['articles' => $articles]);
-        }
-    }
-    else
-    {
-        $articles = Article::All();
-           
-        return view('dashboard', ['articles' => $articles]);  
-    }
-    }
-
-    function removeAdmin(Request $request)
-    {
-        $query = User::where('id', $request->id)->update(['isAdmin' => 0]);
-        if($query)
-        {
-        return redirect('/manageusersview');
-        }
-        else
-        {
-            // ERROR
+        {           
+            return redirect('');
         }
     }
 
-    function makeAdmin(Request $request)
+    function removeAdmin(Request $request, User $user)
     {
-        $query = User::where('id', $request->id)->update(['isAdmin' => 1]);
-        if($query)
+        if (auth()->user()->can('update', $user)) 
         {
-        return redirect('/manageusersview');
+            $query = User::where('id', $request->id)->update(['isAdmin' => 0]);
+            if($query)
+            {
+            return redirect('/home/manageusers');
+            }
+            else
+            {
+                // ERROR
+            }
         }
         else
         {
-            // ERROR
+            return redirect('');
         }
+    }
+
+    function makeAdmin(Request $request, User $user)
+    {
+        if (auth()->user()->can('update', $user)) 
+        {
+            $query = User::where('id', $request->id)->update(['isAdmin' => 1]);
+            if($query)
+            {
+            return redirect('/home/manageusers');
+            }
+            else
+            {
+                // ERROR
+            }
+        }
+        else
+        {
+            return redirect('');
+        }  
     }
 }
