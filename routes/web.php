@@ -4,10 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,51 +23,76 @@ use App\Models\User;
 |
 */
 
+Route::get('admin/login', [AuthController::class, 'adminLoginView']);
+Route::get('admin/logout', [AuthController::class, 'adminLogout']);
+Route::post('adminlogin', [AuthController::class, 'adminLogin']);
 
-Route::group([ 'prefix' => 'admin'], function ()
+
+Route::group([ 'prefix' => 'admin','middleware' => 'is_admin'], function ()
 {
+    Route::group([ 'prefix' => 'home'], function ()
+    {
     Auth::routes();
     Route::get('', [HomeController::class, 'index']);
-    Route::get('articles', [HomeController::class, 'indexArticles']);
-    Route::get('projects', [HomeController::class, 'indexProjects']);
-    Route::get('manageusers', [HomeController::class, 'indexUsers']);
+    });
 
-});
+    Route::group([ 'prefix' => 'articles'], function ()
+    {
+        Route::get('', [ArticlesController::class, 'index']);
+        Route::get('category/{
+            
+        }', [ArticlesController::class, 'viewCategory']);
+        Route::get('{id}/update', [ArticlesController::class, 'updateView']);
+        Route::get('{id}/delete', [ArticlesController::class, 'delete']);
 
-Route::group([ 'prefix' => 'users'], function ()
-{
-    Route::get('login', [AuthController::class, 'loginView']);
-    Route::get('register', [AuthController::class, 'registerView']);
-    Route::get('logout', [AuthController ::class, 'logout']);
-    Route::get('/manageusersview', [UsersController ::class, 'manageUserView'])/*->middleware('can:update,user')*/;
+        Route::get('create', [ArticlesController::class, 'createView']);
+
+        Route::post('update', [ArticlesController::class, 'update']);
+        Route::post('create', [ArticlesController::class, 'create']);
+    });
+
+    Route::group([ 'prefix' => 'projects'], function ()
+    {
+
+    Route::get('', [ProjectsController::class, 'index']);
+    Route::get('create', [ProjectsController::class, 'createView']);
+    Route::get('{id}/edit', [ProjectsController::class, 'editView']);
+    Route::get('{id}/delete', [ProjectsController::class, 'delete']);
+
+    Route::post('update', [ProjectsController::class, 'update']);
+    Route::post('create', [ProjectsController::class, 'create']);
+
+    });
+
+    Route::group([ 'prefix' => 'categories'], function ()
+    {
+    Route::get('', [CategoriesController::class, 'index']);
+    Route::get('{id}/edit', [CategoriesController::class, 'updateView']);
+    Route::get('{id}/delete', [CategoriesController::class, 'delete']);
+
+    Route::get('/create', [CategoriesController ::class, 'createView']);
+
+    Route::post('/create', [CategoriesController ::class, 'create']);
+    Route::post('/update', [CategoriesController ::class, 'update']);
+
+    });
     
-    Route::post('finishlogin', [AuthController::class,"login"]);
-    Route::post('finishregister', [AuthController::class,"register"]);
-    Route::post('/removeadmin', [UsersController ::class, 'removeAdmin'])/*->middleware('can:update,user')*/;
-    Route::post('/makeadmin', [UsersController ::class, 'makeAdmin'])/*->middleware('can:update,user')*/;
+    Route::group([ 'prefix' => 'users'], function ()
+    {
+    Route::get('', [UsersController::class, 'adminView']);
+    Route::get('{id}/update', [UsersController::class, 'updateView']);
+    Route::get('{id}/delete', [UsersController::class, 'delete']);
+
+    Route::get('/create', [UsersController ::class, 'createView']);
+
+    Route::post('/create', [UsersController ::class, 'create']);
+    Route::post('/update', [UsersController ::class, 'update']);
+
+
+    });
 });
 
-Route::group([ 'prefix' => 'articles'], function ()
-{
-    Route::get('', [ArticlesController::class, 'dashboardView']);
-    Route::get('dashboard', [ArticlesController::class, 'dashboardView']);
-    Route::get('article/{id}', [ArticlesController ::class, 'articleView']);
-    Route::get('article/{id}/edit', [ArticlesController::class, 'editView'])/*->middleware('can:update,article')*/;
-    Route::get('createarticle', [ArticlesController ::class, 'createView'])/*->middleware('can:create,article')*/;
-    
-    Route::post('deletearticle', [ArticlesController ::class, 'delete'])/*->middleware('can:delete,article')*/;
-    Route::post('editarticle', [ArticlesController ::class, 'update'])/*->middleware('can:update,article')*/;
-    Route::post('createarticle', [ArticlesController ::class, 'create'])/*->middleware('can:delete,article')*/;
-});
+Route::get('/login', [AuthController ::class, 'loginView']);
 
-Route::group([ 'prefix' => 'projects'], function ()
-{
-Route::get('/projects', [ProjectsController ::class, 'view'])/*->middleware('can:viewAny,project')*/;
-Route::get('/createproject', [ProjectsController ::class, 'createView'])/*->middleware('can:create,project')*/;
-Route::get('/project/{id}', [ProjectsController ::class, 'projectView']);
-Route::get('/project/{id}/edit', [ProjectsController::class, 'editView'])/*->middleware('can:update,project')*/;
 
-Route::post('/createproject', [ProjectsController ::class, 'create'])/*->middleware('can:create,project')*/;
-Route::post('/editproject', [ProjectsController ::class, 'update'])/*->middleware('can:update,project')*/;
-Route::post('/deleteproject', [ProjectsController ::class, 'delete'])/*->middleware('can:delete,project')*/;
-});
+

@@ -21,6 +21,11 @@ class AuthController extends Controller
         return view("users.register");
     }
 
+    function adminLoginView()
+    {
+        return view("admin.auth.login");
+    }
+
     function login(Request $request)
     {
 
@@ -43,6 +48,44 @@ class AuthController extends Controller
                 return back()->withErrors( "Invalid credentials"); // auth fail redirect with error
             }
         }
+    }
+
+    function adminLogin(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',   // required and email format validation
+            'password' => 'required', // required and number field validation
+
+        ]); // create the validations
+        if ($validator->fails())   //check all validations are fine, if not then redirect and show error messages
+        {
+
+            return back()->withInput()->withErrors($validator);
+            // validation failed redirect back to form
+
+        } else {
+            //validations are passed try login using laravel auth attemp
+            if (Auth::attempt($request->only(["email", "password"]))) {
+            if(!Auth::user()->isAdmin)
+            {
+                return redirect('admin/login')->with('error', 'Je hebt geen rechten om de admin dashboard te bekijken. Contacteer een administrateur.');
+            }
+            else
+            {
+                return redirect('admin/home');
+            }
+            } else {
+                return back()->withErrors( "Invalid credentials"); // auth fail redirect with error
+            }
+        }
+    }
+
+    function adminLogout()
+    {
+        Auth::logout();
+        
+        return redirect('/admin/login')->with('message', 'Je bent succesvol uitgelogd');
     }
 
     function register(Request $request)

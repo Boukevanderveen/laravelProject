@@ -10,10 +10,10 @@ use Auth;
 
 class ProjectsController extends Controller
 {
-    function view()
+    function index()
     {
-        $projects = Project::All();
-        return view('projects/projects', ['projects' => $projects]);
+        $projects = Project::latest()->paginate(6);
+        return view('admin.projects.index', ['projects' => $projects]);
 
     }
     
@@ -21,21 +21,12 @@ class ProjectsController extends Controller
     {
         if (auth()->user()->can('create', $project)) 
         {
-            return view('projects/createproject');
+            return view('admin.projects.create');
         }
         else
         {
-            return redirect('/home/projects');
+            return redirect('/admin/projects');
         }
-    }
-    
-    function projectView($id)
-    {
-        
-        $project = Project::where('id', $id)->get();
-
-        return view('projects/project', ['project' => $project]);
-        
     }
 
     function editView($id, Project $project)
@@ -44,11 +35,11 @@ class ProjectsController extends Controller
         {
             $project = Project::where('id', $id)->get();
 
-            return view('projects/editproject', ['project' => $project]);
+            return view('admin.projects.update', ['project' => $project]);
         }
         else
         {
-            return redirect('/projects/project/'.$id.'');
+            return redirect('/admin/projects/');
         }
     }
 
@@ -74,12 +65,13 @@ class ProjectsController extends Controller
                 
                 $Projects->save();
     
-                return redirect('home/projects');   
+                return redirect('admin/projects')->with('message', 'Project succesvol gecreëerd');
+
             }
         }
         else
         {
-            return redirect('/home/projects');
+            return redirect('admin/projects')->with('error', 'Geen rechten om een project te creëren. Contacteer een administrateur.');
         }
     }
 
@@ -90,16 +82,17 @@ class ProjectsController extends Controller
             $query = Project::where('id', $request->id)->update(['name' => $request->name, 'description' => $request->description]);
             if($query)
             {
-                return redirect('projects/project/'.$request->id.'');
+                return redirect('admin/projects')->with('message', 'Project succesvol bewerkt.');
             }
             else
             {
-                //ERROR
+                return redirect('admin/projects')->with('error', 'Er is een fout opgetreden met het bewerken van het project.');
             }
         }
         else
         {
-                //ERROR
+            return redirect('/admin/projects')->with('error', 'Geen rechten om dit project te bewerken. Contacteer een administrateur.');
+
         }
     }
 
@@ -110,16 +103,18 @@ class ProjectsController extends Controller
             $query = Project::where('id', $request->id)->delete();
             if($query)
             {
-                return redirect('/home/projects');
+                return redirect('/admin/projects')->with('message', 'Project succesvol verwijderd.');
             }
             else
             {
-                //ERROR
+                return redirect('admin/projects')->with('error', 'Er is een fout opgetreden met het verwijderen van het project.');
+
             }
         }
         else
         {
-            //ERROR
+            return redirect('/admin/projects')->with('error', 'Geen rechten om dit project te verwijderen. Contacteer een administrateur.');
+
         }
     }
 }

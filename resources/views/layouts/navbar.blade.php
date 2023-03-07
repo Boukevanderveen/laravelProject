@@ -1,10 +1,4 @@
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm mb-5">
   <div class="container">
       <a class="navbar-brand" href="{{ url('/home') }}">
           {{ config('app.name', 'Laravel') }}
@@ -28,10 +22,12 @@
                           <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                       </li>
                   @endif
-
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/login">Admin Login</a>
+                  </li>
                   @if (Route::has('register'))
                       <li class="nav-item">
-                          <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                          <a class="nav-link" href="{{ route('register') }}">Registreren</a>
                       </li>
                   @endif
               @else
@@ -41,11 +37,12 @@
                       </a>
 
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="{{ route('logout') }}"
-                             onclick="event.preventDefault();
-                                           document.getElementById('logout-form').submit();">
-                              {{ __('Logout') }}
-                          </a>
+                        @if(Auth::user()->isAdmin)
+                          <a class="dropdown-item" href="/admin/logout">Uitloggen</a>
+                        @else
+                        <a class="dropdown-item" href="/logout">Uitloggen</a>
+                        @endif
+                        
 
                           <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                               @csrf
