@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="postform" action="/adminlogin">
+            <form method="post" name="postform" action="/admin/login">
 
                 <div class="row mb-3 mt-5">
                     <label for="email" class="col-md-4 col-form-label text-md-end">E-mail:</label>

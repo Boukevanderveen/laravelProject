@@ -29,15 +29,22 @@
                     <input id="password" type="password" class="form-control" name="password" required autofocus>
                 </div>
             </div>
-
-            <div class="row">
-            <div class="col-8"></div>
-            <div class="col-4">
-                <button class="btn btn-primary mb-3">Submit</button>
-            </div>
-            </div>
             @csrf
         </form>
+        <div class="row">
+            <div class="col-6"></div>
+            <div class="col-2">
+            @if($user->isAdmin)
+            <a href="removeadmin"><button class="btn btn-danger mb-3">Verwijder admin</button></a>
+            @else
+            <a href="makeadmin"><button class="btn btn-danger mb-3">Maak admin</button></a>
+            @endif
+            </div>
+
+            <div class="col-4">
+                <button type="submit" form="myform" class="btn btn-primary mb-3">Submit</button>
+            </div>
+            </div>
         @endforeach
     </div>
 </div>

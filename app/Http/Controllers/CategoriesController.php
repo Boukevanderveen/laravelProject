@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoriesController extends Controller
 {
@@ -32,34 +34,29 @@ class CategoriesController extends Controller
         }
     }
 
-    function create(Request $request, Category $category)
+    function create(StoreCategoryRequest $request, Category $category)
     {
+        $request->validated();
+
         if (auth()->user()->can('create', $category)) {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|min:2',    
-            ]); // create the validations
-            if ($validator->fails())
-            {
-                return back()->withInput()->withErrors($validator);
-            } 
-            else
-            {
-                $Categories = new Category;
-                $Categories->name = $request->name;
-    
-                $Categories->save();
-    
-                return redirect('admin/categories')->with('message', 'Categorie succesvol gecreëerd.'); 
-            }
-            }
-            else
-            {
-                return redirect('admin/categories')->with('error', 'Geen rechten om een categorie te creëren. Contacteer een administrateur.');
-            }
+
+            $Categories = new Category;
+            $Categories->name = $request->name;
+
+            $Categories->save();
+
+            return redirect('admin/categories')->with('message', 'Categorie succesvol gecreëerd.'); 
+        }
+        else
+        {
+            return redirect('admin/categories')->with('error', 'Geen rechten om een categorie te creëren. Contacteer een administrateur.');
+        }
     }
 
     function update(Request $request, Category $category)
     {
+        $request->validated();
+
         if (auth()->user()->can('update', $category)) 
         {
             $query = Category::where('id', $request->id)->update(['name' => $request->name]);

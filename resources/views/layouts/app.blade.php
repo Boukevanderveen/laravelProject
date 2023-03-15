@@ -16,7 +16,6 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -24,16 +23,17 @@
 </head>
 
 <body>
-    @include('layouts.navbar')
+
+    @include('includes.navbar')
     <div class="container">
         <div class="row">
             <div class="col-2">
             @if(Auth::check() && Auth::user()->isAdmin)
-                @include('layouts.sidebar')
+                @include('includes.sidebar')
             @endif
             </div>
             <div class="col-10">
-                @include('crudmessage')
+                @include('includes.flashmessage')
                 @yield('content')
                 @yield('scripts')
             </div>

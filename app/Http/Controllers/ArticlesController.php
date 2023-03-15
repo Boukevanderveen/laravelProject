@@ -9,6 +9,8 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\StoreArticleRequest;
 
 class ArticlesController extends Controller
 {
@@ -60,40 +62,35 @@ class ArticlesController extends Controller
 
     }
 
-    function create(Request $request, Article $article)
+    function create(StoreArticleRequest $request, Article $article)
     {
         if (auth()->user()->can('create', $article)) {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|min:5',
-                'content' => 'required', 
-                'image' => 'nullable', 'mimes:jph,jpeg,png,png,gif','max:2048',    
-            ]); // create the validations
-            if ($validator->fails())
-            {
-                return back()->withInput()->withErrors($validator);
-            } 
-            else
-            {
+
+            $request->validated();
+
+                $Articles = new Article;
+
+                if($request->image)
+                {
                 $fileName = time().$request->file('image')->getClientOriginalName();
                 
                 $file = $request->file('image');
                 $file->move(public_path().'/images/',$fileName);
 
+                $Articles->image = $fileName;
+                }
 
-
-                $Articles = new Article;
                 $Articles->title = $request->title;
                 $Articles->description = $request->description;
                 $Articles->content = $request->content;
                 $Articles->author = Auth::user()->name;
                 $Articles->category = $request->category;
-                $Articles->image = $fileName;
                 $Articles->published_at = $request->published_at;
 
                 $Articles->save();
     
                 return redirect('admin/articles')->with('message', 'Artikel succesvol gecreëerd.'); 
-            }
+            
             }
             else
             {

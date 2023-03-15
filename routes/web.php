@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RolesController;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -23,76 +24,111 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('admin/login', [AuthController::class, 'adminLoginView']);
-Route::get('admin/logout', [AuthController::class, 'adminLogout']);
-Route::post('adminlogin', [AuthController::class, 'adminLogin']);
 
-
-Route::group([ 'prefix' => 'admin','middleware' => 'is_admin'], function ()
+Route::group([ 'prefix' => 'admin'], function ()
 {
-    Route::group([ 'prefix' => 'home'], function ()
-    {
-    Auth::routes();
-    Route::get('', [HomeController::class, 'index']);
-    });
+    Route::get('login', [AuthController::class, 'adminLoginView']);
+    Route::get('logout', [AuthController::class, 'adminLogout']);
+    Route::post('login', [AuthController::class, 'adminLogin']);
 
-    Route::group([ 'prefix' => 'articles'], function ()
-    {
-        Route::get('', [ArticlesController::class, 'index']);
-        Route::get('category/{
-            
-        }', [ArticlesController::class, 'viewCategory']);
-        Route::get('{id}/update', [ArticlesController::class, 'updateView']);
-        Route::get('{id}/delete', [ArticlesController::class, 'delete']);
+        Route::group([ 'prefix' => 'home'], function ()
+        {
+            Auth::routes();
+            Route::get('', [HomeController::class, 'index']);
+        });
 
-        Route::get('create', [ArticlesController::class, 'createView']);
+        Route::group([ 'prefix' => 'articles'], function ()
+        {
+            Route::group([ 'prefix' => '{id}'], function ()
+            {
+                Route::get('update', [ArticlesController::class, 'updateView']);
+                Route::get('delete', [ArticlesController::class, 'delete']);
+            });
 
-        Route::post('update', [ArticlesController::class, 'update']);
-        Route::post('create', [ArticlesController::class, 'create']);
-    });
+            Route::get('', [ArticlesController::class, 'index']);
+            Route::get('category/{category}', [ArticlesController::class, 'viewCategory']);
+
+            Route::get('create', [ArticlesController::class, 'createView']);
+
+            Route::post('update', [ArticlesController::class, 'update']);
+            Route::post('create', [ArticlesController::class, 'create']);
+        });
 
     Route::group([ 'prefix' => 'projects'], function ()
     {
+        Route::get('', [ProjectsController::class, 'index']);
+        Route::get('create', [ProjectsController::class, 'createView']);
+    
+        Route::post('update', [ProjectsController::class, 'update']);
+        Route::post('create', [ProjectsController::class, 'create']);
 
-    Route::get('', [ProjectsController::class, 'index']);
-    Route::get('create', [ProjectsController::class, 'createView']);
-    Route::get('{id}/edit', [ProjectsController::class, 'editView']);
-    Route::get('{id}/delete', [ProjectsController::class, 'delete']);
+        Route::group([ 'prefix' => '{id}'], function ()
+        {
+            Route::get('edit', [ProjectsController::class, 'updateView']);
+            Route::get('delete', [ProjectsController::class, 'delete']);
 
-    Route::post('update', [ProjectsController::class, 'update']);
-    Route::post('create', [ProjectsController::class, 'create']);
+                Route::group([ 'prefix' => 'members'], function ()
+                {
+                    Route::get('', [ProjectsController::class, 'membersIndex']); 
+                    Route::post('create', [ProjectsController::class, 'membersCreate']);
 
+                        Route::group([ 'prefix' => '{memberid}'], function ()
+                        {
+                            Route::get('update', [ProjectsController::class, 'membersUpdateView']); 
+                            Route::post('update', [ProjectsController::class, 'membersUpdate']); 
+                            Route::get('delete', [ProjectsController::class, 'rolesMembersDelete']);
+                        
+                        });
+                });
+        });
     });
+
+    Route::group([ 'prefix' => 'roles'], function ()
+        {
+
+            Route::get('', [ProjectsController::class, 'rolesIndex']);
+            Route::get('create', [RolesController::class, 'createView']);
+            Route::post('update', [RolesController::class, 'update']);
+            Route::post('create', [RolesController::class, 'create']);
+
+                Route::group([ 'prefix' => '{id}'], function ()
+                {
+                Route::get('edit', [RolesController::class, 'updateView']);
+                Route::get('delete', [RolesController::class, 'delete']);
+                });
+
+        });
 
     Route::group([ 'prefix' => 'categories'], function ()
     {
-    Route::get('', [CategoriesController::class, 'index']);
-    Route::get('{id}/edit', [CategoriesController::class, 'updateView']);
-    Route::get('{id}/delete', [CategoriesController::class, 'delete']);
+ 
+        Route::get('', [CategoriesController::class, 'index']);
+        Route::get('/create', [CategoriesController ::class, 'createView']);
+        Route::post('/create', [CategoriesController ::class, 'create']);
+        Route::post('/update', [CategoriesController ::class, 'update']);
 
-    Route::get('/create', [CategoriesController ::class, 'createView']);
-
-    Route::post('/create', [CategoriesController ::class, 'create']);
-    Route::post('/update', [CategoriesController ::class, 'update']);
+            Route::group([ 'prefix' => '{id}'], function ()
+            {
+                Route::get('edit', [CategoriesController::class, 'updateView']);
+                Route::get('delete', [CategoriesController::class, 'delete']);
+            });
 
     });
     
     Route::group([ 'prefix' => 'users'], function ()
     {
-    Route::get('', [UsersController::class, 'adminView']);
-    Route::get('{id}/update', [UsersController::class, 'updateView']);
-    Route::get('{id}/delete', [UsersController::class, 'delete']);
 
-    Route::get('/create', [UsersController ::class, 'createView']);
+        Route::get('', [UsersController::class, 'adminView']);
+        Route::get('/create', [UsersController ::class, 'createView']);
+        Route::post('/create', [UsersController ::class, 'create']);
+        Route::post('/update', [UsersController ::class, 'update']);
 
-    Route::post('/create', [UsersController ::class, 'create']);
-    Route::post('/update', [UsersController ::class, 'update']);
-
-
+            Route::group([ 'prefix' => '{id}'], function ()
+            {
+                Route::get('update', [UsersController::class, 'updateView']);
+                Route::get('delete', [UsersController::class, 'delete']);
+                Route::get('removeadmin', [UsersController ::class, 'removeAdmin']);
+                Route::get('makeadmin', [UsersController ::class, 'makeAdmin']);
+            });
     });
 });
-
-Route::get('/login', [AuthController ::class, 'loginView']);
-
-
-

@@ -8,6 +8,10 @@ use App\Models\User;
 use App\Models\Article;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+
 
 class UsersController extends Controller
 {
@@ -41,8 +45,9 @@ class UsersController extends Controller
         }
     }
 
-    function create(Request $request)
+    function create(StoreUserRequest $request)
     {
+        $request->validated();
 
         $User = new User;
         $User->name = $request->name;
@@ -57,8 +62,10 @@ class UsersController extends Controller
 
     }
 
-    function update(Request $request, User $user)
+    function update(UpdateUserRequest $request, User $user)
     {
+        $request->validated();
+
         if (auth()->user()->can('update', $user)) 
         {
             $query = User::where('id', $request->id)->update(['name' => $request->name, 'email' => $request->email, 'password' => $request->password]);
@@ -101,48 +108,45 @@ class UsersController extends Controller
         }
     }
 
-
-
-    function removeAdmin(Request $request, User $user)
+    function makeAdmin($id, User $user)
     {
         if (auth()->user()->can('update', $user)) 
         {
-            $query = User::where('id', $request->id)->update(['isAdmin' => 0]);
+            $query = User::where('id', $id)->update(['isAdmin' => 1]);
             if($query)
             {
-            return redirect('/admin/users')->with('message', 'Adminrol succesvol verwijderd');
+                $user = User::where('id', $id)->get();
+
+                return view('users.admin.edituser', ['user' => $user] );
             }
             else
             {
-                return redirect('/admin/users')->with('message', 'Geen rechten om een adminrol te verwijderen. Contacteer een administrateur.');
-            }
-        }
-        else
-        {
-            return redirect('/admin/users')->with('message', 'Er is een fout opgetreden met het verwijderen van de adminrol.');
-
-        }
-    }
-
-    function makeAdmin(Request $request, User $user)
-    {
-        if (auth()->user()->can('update', $user)) 
-        {
-            $query = User::where('id', $request->id)->update(['isAdmin' => 1]);
-            if($query)
-            {
-                return redirect('/admin/users')->with('message', 'Adminrol succesvol gegeven');
-            }
-            else
-            {
-                return redirect('/admin/users')->with('message', 'Geen rechten om een adminrol te geven. Contacteer een administrateur.');
 
             }
         }
         else
         {
-            return redirect('/admin/users')->with('message', 'Er is een fout opgetreden met het geven van de adminrol.');
 
         }  
+    }
+
+    function removeAdmin($id, User $user)
+    {
+        if (auth()->user()->can('update', $user)) 
+        {
+            $query = User::where('id', $id)->update(['isAdmin' => 0]);
+            if($query)
+            {
+                $user = User::where('id', $id)->get();
+
+                return view('users.admin.edituser', ['user' => $user] );            }
+            else
+            {
+            }
+        }
+        else
+        {
+
+        }
     }
 }
