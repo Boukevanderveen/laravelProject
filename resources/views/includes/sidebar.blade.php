@@ -15,6 +15,6 @@
         <li class="list-group-item">Gebruikers</li>
     </a>
     <a href="/admin/roles">
-        <li class="list-group-item">Rollen</li>
+        <li class="list-group-item"> Rollen</li>
     </a>
 </ul>

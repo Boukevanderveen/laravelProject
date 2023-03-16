@@ -28,4 +28,20 @@ class StoreProjectRequest extends FormRequest
             'description' => 'required|min:3',
         ];
     }
+
+                    /** 
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            
+            'name.required' => 'De naam is verplicht',
+            'name.min' => 'De naam moet minimaal 3 letters bevatten',
+            'description.required' => 'De beschrijving is verplicht',
+            'description.min' => 'De beschrijving moet minimaal 3 letters bevatten',
+        ];
+    }
 }

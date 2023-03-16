@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 
 class ArticlesController extends Controller
 {
@@ -54,6 +55,7 @@ class ArticlesController extends Controller
 
     function viewCategory($category)
     {
+        dd($category);
         $articles = Article::latest()->where('category', $category)->paginate(6);
         $categories = Category::all();
 
@@ -75,8 +77,6 @@ class ArticlesController extends Controller
                 $fileName = time().$request->file('image')->getClientOriginalName();
                 
                 $file = $request->file('image');
-                $file->move(public_path().'/images/',$fileName);
-
                 $Articles->image = $fileName;
                 }
 
@@ -86,9 +86,10 @@ class ArticlesController extends Controller
                 $Articles->author = Auth::user()->name;
                 $Articles->category = $request->category;
                 $Articles->published_at = $request->published_at;
-
                 $Articles->save();
-    
+            
+                $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+
                 return redirect('admin/articles')->with('message', 'Artikel succesvol gecreëerd.'); 
             
             }
@@ -98,8 +99,10 @@ class ArticlesController extends Controller
             }
     }
 
-    function update(Request $request, Article $article)
+    function update(UpdateArticleRequest $request, Article $article)
     {
+        $request->validated();
+
         if (auth()->user()->can('update', $article)) 
         {
             $query = Article::where('id', $request->id)->update(['title' => $request->title, 'description' => $request->description, 'content' => $request->content, 'category' => $request->category, 'published_at' => $request->published_at]);

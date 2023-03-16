@@ -14,7 +14,7 @@
                     <div class="row mb-3  mt-4">
                         <label for="title" class="col-md-4 col-form-label text-md-end">Titel:</label>
                         <div class="col-md-5">
-                            <input value="{{$article->title}}" type="text" class="form-control" name="title" required autofocus>
+                            <input value="{{old('title', $article->title)}}" type="text" class="form-control" name="title"   autofocus>
                         </div>
                     </div>
 
@@ -24,7 +24,7 @@
                             <select class="form-select" name="category" id="category" aria-label="Default select example">
                                 <option selected>{{$article->category}}</option>
                                 @foreach ($categories as $category)
-                                <option value="{{ $category->name }}">{{ $category->name }}</option>
+                                <option value="{{old('category', $category->name)}}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             
@@ -41,20 +41,20 @@
                     <div class="row mb-3">
                         <label class="col-md-4 col-form-label text-md-end">Publiceer datum:</label>
                         <div class="col-md-5">
-                            <input type="datetime-local" class="form-control" name="published_at" step="any"> 
+                            <input value="{{old('published_at', $category->published_at)}}" type="datetime-local" class="form-control" name="published_at" step="any"> 
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                         <div class="col-md-5">
-                            <input value="{{$article->description}}" type="text" class="form-control" name="description" required autofocus>
+                            <input value="{{old('description', $article->description)}}" type="text" class="form-control" name="description"   autofocus>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label for="content" class="col-md-4 col-form-label text-md-end">Content:</label>
                         <div class="col-md-5">
-                            <input value="{{$article->content}}" id="editor" type="text" class="form-control" name="content" required autofocus>
+                            <textarea value="{{$article->content}}" id="editor" type="text" class="form-control" name="content"   autofocus>{{old('content', $article->content)}}</textarea>
                         </div>
                     </div>
 
@@ -65,9 +65,10 @@
                     </div>
 
                     <div class="row">
-                    <div class="col-8"></div>
-                    <div class="col-4">
-                        <button class="btn btn-primary mb-3">Submit</button>
+                    <div class="col-7"></div>
+                    <div class="col-5">
+                        <a href="/admin/articles"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                        <button class="btn btn-primary mb-3">Bevestig</button>
                     </div>
                     </div>
                     @csrf

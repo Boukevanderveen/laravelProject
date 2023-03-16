@@ -23,19 +23,38 @@ class StoreArticleRequest extends FormRequest
      */
     public function rules()
     {
-        $Articles->title = $request->title;
-        $Articles->description = $request->description;
-        $Articles->content = $request->content;
-        $Articles->author = Auth::user()->name;
-        $Articles->category = $request->category;
-        $Articles->published_at = $request->published_at;
-
         return [
             'title' => 'required|min:3',
+            'category' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
+            'published_at' => 'required',
             'description' => 'required|min:3', 
-            'content' => 'required', 
-            'çategory' => 'required',
-            'image' => 'nullable', 'mimes:jph,jpeg,png,png,gif','max:2048'
+            'content' => 'required|min:2', 
+
+        ];
+    }
+
+            /** 
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+
+            'title.required' => 'De titel is verplicht',
+            'title.min' => 'De titel moet minimaal 3 letters bevatten',
+            'category.required' => 'De categorie is verplicht',
+            'image.max' => 'De afbeelding mag niet groter dan 2MB zijn',
+            'image.mimes' => 'De afbeelding moet van bestandstype png, jpeg, jpg, gif of svg zijn.',
+            'published_at.required' => 'De publiseerdatum is verplicht',
+            'description.required' => 'De beschrijving is verplicht',
+            'description.min' => 'De beschrijving moet minimaal 3 letters bevatten',
+            'content.required' => 'De content is verplicht',
+            'content.min' => 'De content moet minimaal 2 letters bevatten',
+            
+            
         ];
     }
 }

@@ -58,14 +58,14 @@
                 <div class="row mb-3 mt-3">
                     <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                     <div class="col-md-5">
-                        <input type="name" id="name" name="name" class="form-control" required autofocus />
+                        <input type="name" id="name" name="name" class="form-control" autofocus />
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <label for="role" class="col-md-4 col-form-label text-md-end">Rol:</label>
                     <div class="col-md-5">
-                        <select class="form-select" name="role" id="role" aria-label="Default select example" required autofocus>
+                        <select class="form-select" name="role" id="role" aria-label="Default select example" autofocus>
                             <option selected></option>
                             @foreach ($roles as $role)
                             <option value="{{ $role->name }}">{{ $role->name }}</option>

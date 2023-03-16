@@ -24,7 +24,21 @@ class UpdateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:2',
+            'name' => 'required|min:2|unique:categories',    
+        ];
+    }
+
+                    /** 
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'De naam is verplicht',
+            'name.min' => 'De naam moet minimaal 2 letters bevatten',
+            'name.unique' => 'Er is al een categorie met deze naam',
         ];
     }
 }

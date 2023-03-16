@@ -13,14 +13,15 @@
             <div class="row mb-3  mt-4">
                 <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                 <div class="col-md-5">
-                    <input id="name" type="text" class="form-control" name="name" required autofocus>
+                    <input value="{{old('name')}}" id="name" type="text" class="form-control" name="name"   autofocus>
                 </div>
             </div>
 
             <div class="row">
-            <div class="col-8"></div>
-            <div class="col-4">
-                <button class="btn btn-primary mb-3">Submit</button>
+            <div class="col-7"></div>
+            <div class="col-5">
+                <a href="/admin/categories"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                <button class="btn btn-primary mb-3">Bevestig</button>
             </div>
             </div>
             @csrf

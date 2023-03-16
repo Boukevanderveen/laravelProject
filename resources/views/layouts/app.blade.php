@@ -34,6 +34,7 @@
             </div>
             <div class="col-10">
                 @include('includes.flashmessage')
+                @include('includes.validationerrors')
                 @yield('content')
                 @yield('scripts')
             </div>

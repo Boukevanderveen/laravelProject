@@ -39,27 +39,27 @@ class UsersController extends Controller
         if (auth()->user()->can('update', $user)) {
             $user = User::where('id', $id)->get();
             return view('users/admin/edituser', ['user' => $user]);
-            }
-            else{
-                return redirect('/admin/users');
+        }
+        else
+        {
+            return redirect('/admin/users');
         }
     }
 
     function create(StoreUserRequest $request)
     {
-        $request->validated();
+            $request->validated();
 
-        $User = new User;
-        $User->name = $request->name;
-        $User->email = $request->email;
-        $User->password = bcrypt($request->password);
-        $User->isAdmin = 0;
-        $User->isOwner = 0;
+            $User = new User;
+            $User->name = $request->name;
+            $User->email = $request->email;
+            $User->password = bcrypt($request->password);
+            $User->isAdmin = 0;
+            $User->isOwner = 0;
+    
+            $User->save();
 
-        $User->save();
-
-        return redirect('/admin/users');
-
+            return redirect('/admin/users');
     }
 
     function update(UpdateUserRequest $request, User $user)

@@ -53,7 +53,7 @@ class CategoriesController extends Controller
         }
     }
 
-    function update(Request $request, Category $category)
+    function update(UpdateCategoryRequest $request, Category $category)
     {
         $request->validated();
 
