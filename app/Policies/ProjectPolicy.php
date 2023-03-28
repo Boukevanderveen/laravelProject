@@ -18,7 +18,7 @@ class ProjectPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project)
     {
-        //
+        return true;
     }
 
     /**
@@ -91,4 +91,25 @@ class ProjectPolicy
     {
         //
     }
+    
+    public function viewAnyMember(User $user, Project $project)
+    {
+        return true;
+    }
+
+    public function updateMember(User $user, Project $project)
+    {
+        return true;
+    }
+
+    public function deleteMember(User $user, Project $project)
+    {
+        return true;
+    }
+
+    public function viewAnyTask(User $user, Project $project)
+    {
+        return true;
+    }
 }
+

@@ -48,12 +48,12 @@ class StoreArticleRequest extends FormRequest
             'category.required' => 'De categorie is verplicht',
             'image.max' => 'De afbeelding mag niet groter dan 2MB zijn',
             'image.mimes' => 'De afbeelding moet van bestandstype png, jpeg, jpg, gif of svg zijn.',
+            'image.image' => 'De afbeelding moet van bestandstype png, jpeg, jpg, gif of svg zijn.',
             'published_at.required' => 'De publiseerdatum is verplicht',
             'description.required' => 'De beschrijving is verplicht',
             'description.min' => 'De beschrijving moet minimaal 3 letters bevatten',
             'content.required' => 'De content is verplicht',
             'content.min' => 'De content moet minimaal 2 letters bevatten',
-            
             
         ];
     }

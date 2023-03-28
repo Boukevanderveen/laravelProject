@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 
     <script type="text/javascript" src="js/bootstrap/bootstrap-dropdown.js"></script>
@@ -19,7 +19,6 @@
                         <th scope="col">Categorie</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -27,7 +26,7 @@
                         <tr>
                             <td>{{ $category->id }}</td>
                             <td>{{ $category->name }}</td>
-                            <td><a href="/admin/categories/{{ $category->id }}/edit"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="/admin/categories/{{ $category->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                            <td><a href="{{ route('admin.categories.edit', $category) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="{{ route('admin.categories.destroy', $category) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
                         </tr>
                     @endforeach
                 </tbody>

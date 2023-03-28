@@ -16,131 +16,177 @@ use App\Http\Requests\UpdateArticleRequest;
 class ArticlesController extends Controller
 {
 
-    function index()
+    function index(Article $article)
     {
         $articles = Article::latest()->paginate(6);
         $categories = Category::all();
-
-        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories]);
+        // compact('variable', 'variable')
+        return view('articles.index', ['articles' => $articles, 'categories' => $categories, 'article' => $article]);
     }
 
-    function updateView($id, Article $article)
+    function show(Article $article)
     {
-        if (auth()->user()->can('update', $article)) {
-        $article = Article::where('id', $id)->get();
+        $this->authorize('viewAny', $article);
+
+        return view('articles.show', ['article' => $article]);
+    }
+
+    function create(Article $article)
+    {
+        $this->authorize('create', $article);
+
         $categories = Category::all();
-
-        return view('admin.articles.update', ['article' => $article, 'categories' => $categories]);
-        }
-        else{
-            return redirect('/admin/articles');
-        }
+        return view('articles.create', ['categories' => $categories]);
     }
 
-    function createView(Article $article)
+    function store(StoreArticleRequest $request, Article $article)
     {
-        
-        if (auth()->user()->can('create', $article)) 
-        {
-            $categories = Category::all();
+        $this->authorize('create', $article);
 
-            return view('admin.articles.create', ['categories' => $categories]);
-
-        }
-        else
+        $Articles = new Article;
+        if ($request->hasFile('image')) 
         {
-            return redirect('');
+            $fileName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('/images/articles/' . $Articles->id) . '/', $fileName);
+            $Articles->image = $fileName;
         }
+        $Articles->title = $request->title;
+        $Articles->description = $request->description;
+        $Articles->content = $request->content;
+        $Articles->author = Auth::user()->name;
+        $Articles->category = $request->category;
+        $Articles->published_at = $request->published_at;
+        $Articles->save();
+        return redirect('articles')->with('message', 'Artikel succesvol gecreëerd.'); 
     }
 
-    function viewCategory($category)
+    function categoriesShow($category)
     {
-        dd($category);
+        $this->authorize('view', $article);
+
         $articles = Article::latest()->where('category', $category)->paginate(6);
         $categories = Category::all();
-
-        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories]);
-
-
+        return view('articles.index', ['articles' => $articles, 'categories' => $categories]);
     }
-
-    function create(StoreArticleRequest $request, Article $article)
+    
+    function edit(Article $article)
     {
-        if (auth()->user()->can('create', $article)) {
+        $this->authorize('update', $article);
 
-            $request->validated();
-
-                $Articles = new Article;
-
-                if($request->image)
-                {
-                $fileName = time().$request->file('image')->getClientOriginalName();
-                
-                $file = $request->file('image');
-                $Articles->image = $fileName;
-                }
-
-                $Articles->title = $request->title;
-                $Articles->description = $request->description;
-                $Articles->content = $request->content;
-                $Articles->author = Auth::user()->name;
-                $Articles->category = $request->category;
-                $Articles->published_at = $request->published_at;
-                $Articles->save();
-            
-                $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
-
-                return redirect('admin/articles')->with('message', 'Artikel succesvol gecreëerd.'); 
-            
-            }
-            else
-            {
-                return redirect('admin/articles')->with('error', 'Geen rechten om een artikel te creëren. Contacteer een administrateur.');
-            }
+        $categories = Category::all();
+        return view('articles.edit', ['article' => $article, 'categories' => $categories]);
     }
 
     function update(UpdateArticleRequest $request, Article $article)
     {
-        $request->validated();
+        $this->authorize('update', $article);
 
-        if (auth()->user()->can('update', $article)) 
+        if ($request->hasFile('image')) 
         {
-            $query = Article::where('id', $request->id)->update(['title' => $request->title, 'description' => $request->description, 'content' => $request->content, 'category' => $request->category, 'published_at' => $request->published_at]);
-            if($query)
-            {
-                return redirect('/admin/articles')->with('message', 'Artikel succesvol bewerkt.');
-            }
-            else
-            {
-                return redirect('/admin/articles')->with('error', 'Er is een fout opgetreden met het bewerken van het artikel.');
-        
-            }
+            $fileName = time() . '.' . $request->image->extension();
+            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+            $article->image = $fileName;
         }
-        else
-        {
-            return redirect('/admin/articles')->with('error', 'Geen rechten om dit artikel te bewerken. Contacteer een administrateur.');
-        }
+
+        $article->title = $request->title;
+        $article->description = $request->description;
+        $article->content = $request->content;
+        $article->category = $request->category;
+        $article->published_at = $request->published_at;
+        $article->update();
+
+        return back()->with('message', 'Artikel succesvol bewerkt.');
+    }
+    
+    function destroy(Request $request, Article $article)
+    {
+        $this->authorize('delete', $article);
+
+        $article->delete();
+        return back()->with('message', 'Artikel succesvol verwijderd.');
     }
 
-    
-    function delete(Request $request, Article $article)
-    {
-        if (auth()->user()->can('delete', $article)) 
-        {
-            $query = Article::where('id', $request->id)->delete();
-            if($query)
-            {
-                return redirect('/admin/articles')->with('message', 'Artikel succesvol verwijderd.');
-            }
-            else
-            {
-                return redirect('/admin/articles')->with('error', 'Er is een fout opgetreden met het verwijderen van het artikel.');
 
-            }
-        }
-        else
+    function adminIndex()
+    {
+        $articles = Article::latest()->paginate(6);
+        $categories = Category::all();
+        // compact('variable', 'variable')
+        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories]);
+    }
+
+    function adminCreate(Article $article)
+    {
+        $this->authorize('create', $article);
+
+        $categories = Category::all();
+        return view('admin.articles.create', ['categories' => $categories]);
+    }
+
+    function adminStore(StoreArticleRequest $request, Article $article)
+    {
+        $this->authorize('create', $article);
+
+        $Articles = new Article;
+        if ($request->hasFile('image')) 
         {
-            return redirect('/admin/articles')->with('error', 'Geen rechten om dit artikel te verwijderen. Contacteer een administrateur.');
+            $fileName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('/images/articles/' . $Articles->id), $fileName);
+            $Articles->image = $fileName;
         }
+        $Articles->title = $request->title;
+        $Articles->description = $request->description;
+        $Articles->content = $request->content;
+        $Articles->author = Auth::user()->name;
+        $Articles->category = $request->category;
+        $Articles->published_at = $request->published_at;
+        $Articles->save();
+        return redirect('admin/articles')->with('message', 'Artikel succesvol gecreëerd.'); 
+    }
+
+    function adminCategoriesShow($category)
+    {
+        $this->authorize('view', $article);
+
+        $articles = Article::latest()->where('category', $category)->paginate(6);
+        $categories = Category::all();
+        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories]);
+    }
+    
+    function adminEdit(Article $article)
+    {
+        $this->authorize('update', $article);
+
+        $categories = Category::all();
+        return view('admin.articles.edit', ['article' => $article, 'categories' => $categories]);
+    }
+
+    function adminUpdate(UpdateArticleRequest $request, Article $article)
+    {
+        $this->authorize('update', $article);
+
+        if ($request->hasFile('image')) 
+        {
+            $fileName = time() . '.' . $request->image->extension();
+            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+            $article->image = $fileName;
+        }
+
+        $article->title = $request->title;
+        $article->description = $request->description;
+        $article->content = $request->content;
+        $article->category = $request->category;
+        $article->published_at = $request->published_at;
+        $article->update();
+
+        return back()->with('message', 'Artikel succesvol bewerkt.');
+    }
+    
+    function adminDestroy(Request $request, Article $article)
+    {
+        $this->authorize('delete', $article);
+
+        $article->delete();
+        return back()->with('message', 'Artikel succesvol verwijderd.');
     }
 }

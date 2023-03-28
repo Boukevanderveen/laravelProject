@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -7,19 +7,25 @@
 </div>
 <div class="row">
     <div class="col-12 card">
-        <form method="post" name="projectform" action="/admin/projects/create">
+        <form method="post" name="projectform" action="/admin/projects/store">
             <input type="hidden"> 
 
             <div class="row mb-3  mt-4">
                 <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                 <div class="col-md-5">
-                    <input value="{{old('name')}}" id="name" type="text" class="form-control" name="name"   autofocus>
+                    <input value="{{old('name')}}" id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name"   autofocus>
+                    @if ($errors->has('name'))
+                    <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                    @endif
                 </div>
             </div>
             <div class="row mb-3">
                 <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                 <div class="col-md-5">
-                    <input value="{{old('description')}}" id="description" type="text" class="form-control" name="description"   autofocus>
+                    <input value="{{old('description')}}" id="description" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>
+                    @if ($errors->has('description'))
+                    <div class="invalid-feedback">{{ $errors->first('description') }}</div>
+                    @endif  
                 </div>
             </div>
 

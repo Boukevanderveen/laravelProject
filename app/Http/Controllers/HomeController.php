@@ -28,32 +28,4 @@ class HomeController extends Controller
     {
         return view('home.home', ['dataDisplay' => 'none']);
     }
-    
-    public function indexArticles()
-    {
-        $articles = Article::All();
-
-        return view('home.home', ['articles' => $articles, 'dataDisplay' => 'articles']);
-    }
-
-    public function indexProjects()
-    {
-        $projects = Project::All();
-
-        return view('home.home', ['projects' => $projects, 'dataDisplay' => 'projects']);
-    }
-
-    public function indexUsers(User $user)
-    {
-        if (auth()->user()->can('update', $user)) 
-        {
-            $users = User::All();
-
-            return view('home.home', ['users' => $users, 'dataDisplay' => 'users']);
-        }
-        else
-        {           
-            return redirect('');
-        }
-    }
 }

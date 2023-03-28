@@ -16,94 +16,82 @@ use App\Http\Requests\UpdateRoleRequest;
 
 class RolesController extends Controller
 {
-    function createView(Role $role)
+    function index(Role $role)
     {
-        if (auth()->user()->can('create', $role)) 
-        {
-            return view('admin.roles.create');
-        }
-        else
-        {
-            return redirect('/admin/projects');
-        }
+        $this->authorize('update', $role);
+        $roles = Role::latest()->paginate(6);
+        return view('roles.index', ['roles' => $roles, 'role' => $role]);
     }
 
-    function updateView($id, Role $role)
+    function create(Role $role)
     {
-        if (auth()->user()->can('update', $role)) 
-        {
-            $role = Role::where('id', $id)->get();
-
-            return view('admin.roles.update', ['role' => $role]);
-        }
-        else
-        {
-            return redirect('/admin/projects/');
-        }
+        $this->authorize('create', $role);
+        return view('roles.create');
     }
 
-    function create(StoreRoleRequest $request, Role $role)
+    function store(StoreRoleRequest $request, Role $role)
     {
-
-        if (auth()->user()->can('create', $role)) 
-        {
-            $request->validated();
-
-                $Role = new Role;
-                $Role->name = $request->name;
-                
-                $Role->save();
+        $this->authorize('create', $role);
+        $Role = new Role;
+        $Role->name = $request->name;
+        $Role->save();
+        return redirect('roles')->with('message', 'Rol succesvol gecreëerd');
+    }
     
-                return redirect('admin/roles')->with('message', 'Rol succesvol gecreëerd');
-        }
-        else
-        {
-            return back()->with('error', 'Geen rechten om een project te creëren. Contacteer een administrateur.');
-        }
+    function edit(Role $role)
+    {
+        $this->authorize('update', $role);
+        return view('roles.edit', ['role' => $role]);
     }
 
     function update(UpdateRoleRequest $request, Role $role)
     {
-        if (auth()->user()->can('update', $role)) 
-        {
-            $request->validated();
-    
-            $query = Role::where('id', $request->id)->update(['name' => $request->name]);
-            if($query)
-            {
-                return redirect('admin/roles')->with('message', 'Rol succesvol bewerkt.');
-            }
-            else
-            {
-                return back()->with('error', 'Er is een fout opgetreden met het bewerken van de rol.');
-            }
-        }
-        else
-        {
-            return back()->with('error', 'Geen rechten om deze rol te bewerken. Contacteer een administrateur.');
-
-        }
+        $this->authorize('update', $role);
+        $role->name = $request->name;
+        $role->save();
+        return redirect('roles')->with('message', 'Rol succesvol bewerkt.');
     }
 
-    function delete(Request $request, Role $role)
+    function destroy(Request $request, Role $role)
     {
-        if (auth()->user()->can('delete', $role)) 
-        {
-            $query = Role::where('id', $request->id)->delete();
-            if($query)
-            {
-                return back()->with('message', 'Rol succesvol verwijderd.');
-            }
-            else
-            {
-                return back()->with('error', 'Er is een fout opgetreden met het verwijderen van de rol.');
+        $this->authorize('delete', $role);
+        $role->delete();
+        return back()->with('message', 'Rol succesvol verwijderd.');
+    }
 
-            }
-        }
-        else
-        {
-            return back()->with('error', 'Geen rechten om deze rol te verwijderen. Contacteer een administrateur.');
+    function adminCreate(Role $role)
+    {
+        $this->authorize('create', $role);
+        return view('admin.roles.create');
+    }
 
-        }
+    function adminStore(StoreRoleRequest $request, Role $role)
+    {
+        $this->authorize('create', $role);
+        $Role = new Role;
+        $Role->name = $request->name;
+        $Role->save();
+        return redirect('admin/roles')->with('message', 'Rol succesvol gecreëerd');
+    }
+    
+    function adminEdit(Role $role)
+    {
+        $this->authorize('update', $role);
+        return view('admin.roles.edit', ['role' => $role]);
+    }
+
+    function adminUpdate(UpdateRoleRequest $request, Role $role)
+    {
+        $this->authorize('update', $role);
+        $role->name = $request->name;
+        $role->save();
+        return redirect('admin/roles')->with('message', 'Rol succesvol bewerkt.');
+    }
+
+    function adminDestroy(Request $request, Role $role)
+    {
+        $this->authorize('delete', $role);
+        $role->delete();
+        return back()->with('message', 'Rol succesvol verwijderd.');
     }
 }

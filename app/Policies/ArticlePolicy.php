@@ -93,9 +93,4 @@ class ArticlePolicy
     {
         return $user->isAdmin;
     }
-
-    public function manageUsers(User $user, Article $article)
-    {
-        return $user->isAdmin;
-    }
 }

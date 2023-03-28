@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -7,13 +7,16 @@
 </div>
 <div class="row">
     <div class="col-12 card">
-        <form method="post" name="categoryform" action="/admin/categories/create">
+        <form method="post" name="categoryform" action="/admin/categories/store">
             <input type="hidden"> 
 
             <div class="row mb-3  mt-4">
                 <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                 <div class="col-md-5">
-                    <input value="{{old('name')}}" id="name" type="text" class="form-control" name="name"   autofocus>
+                    <input value="{{old('name')}}" id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name"   autofocus>
+                    @if ($errors->has('name'))
+                    <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                    @endif
                 </div>
             </div>
 

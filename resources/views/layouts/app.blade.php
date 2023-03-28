@@ -23,18 +23,13 @@
 </head>
 
 <body>
-
     @include('includes.navbar')
     <div class="container">
         <div class="row">
-            <div class="col-2">
-            @if(Auth::check() && Auth::user()->isAdmin)
-                @include('includes.sidebar')
-            @endif
-            </div>
-            <div class="col-10">
+
+            <div class="col-12">
                 @include('includes.flashmessage')
-                @include('includes.validationerrors')
+                @include('includes.modals')
                 @yield('content')
                 @yield('scripts')
             </div>

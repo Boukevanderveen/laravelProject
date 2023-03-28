@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 
 <div class="row">
@@ -11,7 +11,7 @@
 </div>
 
 <div class="row">
-    <div class="col-12 card">
+    <div class="card">
         <table class="table">
             <thead>
                 <tr>
@@ -27,7 +27,7 @@
                         <td>{{ $project->id }}</td>
                         <td>{{ $project->name }}</td>
                         <td>{{ $project->description }}</td>
-                        <td><a href="/admin/projects/{{ $project->id }}/edit"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="/admin/projects/{{ $project->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                        <td><a href="{{ route('admin.projects.edit', $project) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="{{ route('admin.projects.destroy', $project) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
                     </tr>
                 @endforeach
             </tbody>

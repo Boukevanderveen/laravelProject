@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 
 <div class="row">
@@ -25,7 +25,7 @@
                     <tr>
                         <td>{{ $role->id }}</td>
                         <td>{{ $role->name }}</td>
-                        <td> <a href="/admin/roles/{{ $role->id }}/edit"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="/admin/roles/{{ $role->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                        <td> <a href="{{ route('admin.roles.edit', $role) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="{{ route('admin.roles.destroy', $role) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
                     	
                     </tr>
                 @endforeach

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm mb-5">
   <div class="container">
-      <a class="navbar-brand" href="{{ url('/home') }}">
+      <a class="navbar-brand" href="{{ url('/') }}">
           {{ config('app.name', 'Laravel') }}
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -9,10 +9,20 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- Left Side Of Navbar -->
-          <ul class="navbar-nav me-auto">
 
-          </ul>
 
+        <ul class="navbar-nav me-auto">
+        <a href="articles">Artikelen</a>
+        </ul>
+        <ul class="navbar-nav me-auto">
+        <a href="projects">Projecten</a>
+        </ul>
+
+            @if(Auth::user()->isAdmin)
+            <ul class="navbar-nav me-auto">
+            <a href="admin">Admin</a>
+            </ul>
+            @endif
           <!-- Right Side Of Navbar -->
           <ul class="navbar-nav ms-auto">
               <!-- Authentication Links -->
@@ -44,12 +54,13 @@
                         @endif
                         
 
-                          <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                               @csrf
                           </form>
                       </div>
                   </li>
               @endguest
+
+
           </ul>
       </div>
   </div>

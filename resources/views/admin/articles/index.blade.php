@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('content')
 
     <script type="text/javascript" src="js/bootstrap/bootstrap-dropdown.js"></script>
@@ -19,8 +19,9 @@
                         <option value="/admin/articles/">Alle artikelen</option>
                         @foreach($categories as $category)
                         <option value="/admin/articles/category/{{$category->name}}">{{$category->name}}</option>
-                    @endforeach
+                        @endforeach
                     </select>
+                    
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Titel</th>
@@ -36,9 +37,9 @@
                             <td>{{ $article->title }}</td>
                             <td>{{ $article->description }}</td>
                             <td>{{ $article->author }}</td>
-                            <td><a href="/admin/articles/{{ $article->id }}/update"><button btn btn-link
+                            <td><a href="{{ route('admin.articles.edit', $article) }}"><button btn btn-link
                                         class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a> <a
-                                    href="/admin/articles/{{ $article->id }}/delete"><button
+                                    href="{{ route('admin.articles.destroy', $article) }}"><button
                                         class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
                         </tr>
                     @endforeach

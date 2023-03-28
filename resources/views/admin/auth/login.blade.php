@@ -2,13 +2,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
             @yield('scripts')
-
             <h1>Admin login</h1>
         </div>
     </div>
@@ -38,7 +32,6 @@
                     </div>
                 </div>
                 @csrf
-
             </form>
         </div>
     </div>

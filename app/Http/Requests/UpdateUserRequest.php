@@ -43,6 +43,7 @@ class UpdateUserRequest extends FormRequest
             'name.unique' => 'Deze naam is al in gebruik',
             'email.required' => 'De email is verplicht',
             'email.unique' => 'Dit E-mailadres is al in gebruik',
+            'email.email' => 'Vul een geldig E-mail adres in',
             'password.required' => 'Het wachtwoord is verplicht',
             'password.min' => 'Het wachtwoord moet minimaal 6 letters bevatten',
         ];
