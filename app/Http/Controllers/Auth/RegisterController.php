@@ -22,6 +22,11 @@ class RegisterController extends Controller
     |
     */
 
+    public function authenticated()
+    {
+        return redirect('');
+    }
+
     use RegistersUsers;
 
     /**
@@ -53,6 +58,10 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],[
+            'email.required' => 'Het veld email is verplicht.',
+            'email.email' => 'Het veld E-mail moet een geldig E-mailadres bevatten',
+            'email.exists' => 'Er bestaat geen account met dit email adres.',
         ]);
     }
 
@@ -68,6 +77,10 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'isAdmin' => 0,
+            'isOwner' => 0
         ]);
+
+        return redirect('');
     }
 }

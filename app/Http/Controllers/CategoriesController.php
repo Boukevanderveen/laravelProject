@@ -11,58 +11,19 @@ use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoriesController extends Controller
 {
-    function index(Category $category)
+    function adminIndex(Category $category)
     {
-        $categories = Category::latest()->paginate(6);
+        $this->authorize('adminView', $category);
 
-        return view('categories.index', ['categories' => $categories, 'category' => $category]);
-    }
-
-    function create()
-    {
-        return view('categories.create');
-    }
-
-    function store(StoreCategoryRequest $request, Category $category)
-    {
-        $this->authorize('create', $category);
-        $Categories = new Category;
-        $Categories->name = $request->name;
-        $Categories->save();
-        return redirect('categories')->with('message', 'Categorie succesvol gecreëerd.'); 
-    }
-
-    function edit($id, Category $category)
-    {
-        $this->authorize('update', $category);
-        $category = Category::where('id', $id)->get();
-        return view('categories.edit', ['category' => $category]);
-    }
-
-    function update(UpdateCategoryRequest $request, Category $category)
-    {
-        $this->authorize('update', $category);
-        $category->name = $request->name;
-        $category->save();
-        return redirect('/categories')->with('message', 'Categorie succesvol bewerkt.');
-    }
-
-    function destroy(Category $category)
-    {
-        $this->authorize('delete', $category);
-        $category->delete();  
-        return back()->with('message', 'Categorie succesvol verwijderd.');
-    }
-
-    function adminIndex()
-    {
         $categories = Category::latest()->paginate(6);
 
         return view('admin.categories.index', ['categories' => $categories]);
     }
 
-    function adminCreate()
+    function adminCreate(Category $category)
     {
+        $this->authorize('create', $category);
+
         return view('admin.categories.create');
     }
 
@@ -75,10 +36,10 @@ class CategoriesController extends Controller
         return redirect('admin/categories')->with('message', 'Categorie succesvol gecreëerd.'); 
     }
 
-    function adminEdit($id, Category $category)
+    function adminEdit(Category $category)
     {
         $this->authorize('update', $category);
-        $category = Category::where('id', $id)->get();
+        $category = Category::where('id', $category->id)->get();
         return view('admin.categories.edit', ['category' => $category]);
     }
 

@@ -7,7 +7,7 @@
         </div>
         <div class="row">
             <div class="col-12 card">
-                <form method="post" name="articleform" action="/admin/articles/update">
+                <form method="post" name="articleform" action="{{ route('admin.articles.update', $article) }} " enctype="multipart/form-data">
                     <input value="{{$article->id}}"name="id" type="hidden"> 
 
                     <div class="row mb-3  mt-4">
@@ -36,9 +36,9 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label class="col-md-4 col-form-label text-md-end">Afbeelding:</label>
+                        <label for="image" class="col-md-4 col-form-label text-md-end">Afbeelding:</label>
                         <div class="col-md-5">
-                                <input class="form-control @error('image') is-invalid @enderror" name="image" type="file" id="image">
+                                <input class="form-control @error('image') is-invalid @enderror" name="image" type="file" id="image" autofocus>
                                 @if ($errors->has('image'))
                                 <div class="invalid-feedback">{{ $errors->first('image') }}</div>
                                 @endif
@@ -49,6 +49,7 @@
                         <label class="col-md-4 col-form-label text-md-end">Publiceer datum:</label>
                         <div class="col-md-5">
                             <input value="{{old('published_at', $article->published_at)}}" type="date" class="form-control @error('published_at') is-invalid @enderror" name="published_at" step="any"> 
+                            
                             @if ($errors->has('published_at'))
                             <div class="invalid-feedback">{{ $errors->first('published_at') }}</div>
                             @endif
@@ -58,7 +59,7 @@
                     <div class="row mb-3">
                         <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                         <div class="col-md-5">
-                            <input value="{{old('description', $article->description)}}" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>
+                            <textarea rows="3" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>{{old('description', $article->description)}}</textarea>
                             @if ($errors->has('description'))
                             <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                             @endif
@@ -74,16 +75,10 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-5">
-                            <img src="\images\{{$article->image}}">
-                        </div>
-                    </div>
-
                     <div class="row">
                     <div class="col-7"></div>
                     <div class="col-5">
-                        <a href="/admin/articles"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                        <a href="{{ route('admin.articles.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                         <button class="btn btn-primary mb-3">Bevestig</button>
                     </div>
                     </div>
@@ -101,4 +96,11 @@
         } );
 </script>
 </div>
+<style>
+    .ck-editor__editable[role="textbox"] {
+        /* editing area */
+        min-height: 200px;
+    }
+
+</style>
 @endsection

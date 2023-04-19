@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    use HasFactory;
     protected $table = 'projects';
+    
+    use HasFactory;
     protected $fillable = [
     'name',
     'description',
@@ -17,11 +18,6 @@ class Project extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(User::class)->withTimestamps()->withPivot(['role_id'])->using(ProjectUser::class);
     }
 }

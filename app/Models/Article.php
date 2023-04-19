@@ -16,4 +16,7 @@ class Article extends Model
     'author',
     'article'
     ];
+
+    //protected $casts = [ 'published_at'=>'date'];
+
 }

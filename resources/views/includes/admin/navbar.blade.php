@@ -23,7 +23,7 @@
                       </li>
                   @endif
                   <li class="nav-item">
-                    <a class="nav-link" href="/admin/login">Admin Login</a>
+                    <a class="nav-link" href="{{ route('admin.login') }}">Admin Login</a>
                   </li>
                   @if (Route::has('register'))
                       <li class="nav-item">
@@ -38,7 +38,7 @@
 
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         @if(Auth::user()->isAdmin)
-                          <a class="dropdown-item" href="/admin/logout">Uitloggen</a>
+                          <a class="dropdown-item" href="{{ route('logout') }}">Uitloggen</a>
                         @else
                         <a class="dropdown-item" href="/logout">Uitloggen</a>
                         @endif

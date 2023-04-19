@@ -54,7 +54,7 @@ class UsersController extends Controller
         $user->password = $request->password;
         $user->isadmin = 0;
         $user->isowner = 0;
-        $user->save();
+        $user->update();
         return redirect('/users')->with('message', 'Gebruiker succesvol bewerkt.');
     }
 
@@ -67,6 +67,8 @@ class UsersController extends Controller
 
     function adminIndex(User $user)
     {
+        $this->authorize('adminView', $user);
+
         $this->authorize('update', $user);
         $users = User::latest()->paginate(6);
         return view('admin.users.index', ['users' => $users]);
@@ -77,10 +79,9 @@ class UsersController extends Controller
         return view('admin.users.create');
     }
 
-    function adminEdit($id, User $user)
+    function adminEdit(User $user)
     {
         $this->authorize('update', $user);
-        $user = User::where('id', $id)->get();
         return view('admin.users.edit', ['user' => $user]);
     }
 
@@ -90,7 +91,7 @@ class UsersController extends Controller
         $User->name = $request->name;
         $User->email = $request->email;
         $User->password = bcrypt($request->password);
-        $User->isAdmin = 0;
+        $User->isAdmin = $request->isadmin;
         $User->isOwner = 0;
         $User->save();
         return redirect('/admin/users');
@@ -101,8 +102,11 @@ class UsersController extends Controller
         $this->authorize('update', $user);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = $request->password;
-        $user->save();
+        if(!empty($request->password)) {
+        $user->password = bcrypt($request->password);
+        }
+        $user->isAdmin = $request->isadmin;
+        $user->update();
         return redirect('/admin/users')->with('message', 'Gebruiker succesvol bewerkt.');
     }
 

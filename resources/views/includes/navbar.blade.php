@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm mb-5">
   <div class="container">
-      <a class="navbar-brand" href="{{ url('/') }}">
+      <a class="navbar-brand" href="/">
           {{ config('app.name', 'Laravel') }}
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -10,21 +10,31 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- Left Side Of Navbar -->
 
-
-        <ul class="navbar-nav me-auto">
-        <a href="articles">Artikelen</a>
+        <ul class="navbar-nav mr-auto">
+        <a class="nav-link" href="/">Home</a>
         </ul>
-        <ul class="navbar-nav me-auto">
-        <a href="projects">Projecten</a>
+        <ul class="navbar-nav mr-auto">
+        <a class="nav-link" href="{{ route('articles.index') }}">Laatste nieuws</a>
+        </ul>
+        <ul class="navbar-nav mr-auto">
+        <a class="nav-link" href="{{ route('projects.index') }}">Projecten</a>
+        </ul>
+        <ul class="navbar-nav mr-auto">
+            <a class="nav-link" href="{{ route('products.index') }}">Producten</a>
         </ul>
 
-            @if(Auth::user()->isAdmin)
-            <ul class="navbar-nav me-auto">
-            <a href="admin">Admin</a>
-            </ul>
-            @endif
           <!-- Right Side Of Navbar -->
           <ul class="navbar-nav ms-auto">
+            <p class="btn-holder"><a href="{{ route('products.cart') }}" class="btn btn btn-block text-center text-secondary" role="button"><i class="fa fa-shopping-cart"></i> </a> </p>
+
+            @if(Auth::user())
+            @if(Auth::user()->isAdmin)
+            <ul class="navbar-nav mr-auto navbar-right">
+
+            <a class="nav-link" href="{{ route('admin.index') }}">Admin</a>
+            </ul>
+            @endif
+            @endif
               <!-- Authentication Links -->
               @guest
                   @if (Route::has('login'))
@@ -32,9 +42,6 @@
                           <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                       </li>
                   @endif
-                  <li class="nav-item">
-                    <a class="nav-link" href="/admin/login">Admin Login</a>
-                  </li>
                   @if (Route::has('register'))
                       <li class="nav-item">
                           <a class="nav-link" href="{{ route('register') }}">Registreren</a>
@@ -47,15 +54,10 @@
                       </a>
 
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        @if(Auth::user()->isAdmin)
-                          <a class="dropdown-item" href="/admin/logout">Uitloggen</a>
-                        @else
-                        <a class="dropdown-item" href="/logout">Uitloggen</a>
-                        @endif
-                        
-
-                              @csrf
-                          </form>
+                        <form action="/logout" method="POST">
+                            <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">Uitloggen</a>
+                            @csrf
+                        </form>
                       </div>
                   </li>
               @endguest

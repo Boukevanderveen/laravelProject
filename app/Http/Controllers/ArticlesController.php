@@ -47,8 +47,16 @@ class ArticlesController extends Controller
         if ($request->hasFile('image')) 
         {
             $fileName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('/images/articles/' . $Articles->id) . '/', $fileName);
-            $Articles->image = $fileName;
+            $file = $request->file('image');
+            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+                        //$Articles->image = $fileName;
+
+            
+
+            //$fileName = time().$request->file('image')->getClientOriginalName();
+                
+                //$Articles->image = $fileName;
+
         }
         $Articles->title = $request->title;
         $Articles->description = $request->description;
@@ -57,10 +65,9 @@ class ArticlesController extends Controller
         $Articles->category = $request->category;
         $Articles->published_at = $request->published_at;
         $Articles->save();
-        return redirect('articles')->with('message', 'Artikel succesvol gecreëerd.'); 
     }
 
-    function categoriesShow($category)
+    function categoriesArticles($category, Article $article)
     {
         $this->authorize('view', $article);
 
@@ -107,8 +114,10 @@ class ArticlesController extends Controller
     }
 
 
-    function adminIndex()
+    function adminIndex(Article $article)
     {
+        $this->authorize('adminView', $article);
+
         $articles = Article::latest()->paginate(6);
         $categories = Category::all();
         // compact('variable', 'variable')
@@ -128,12 +137,14 @@ class ArticlesController extends Controller
         $this->authorize('create', $article);
 
         $Articles = new Article;
+
         if ($request->hasFile('image')) 
         {
             $fileName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('/images/articles/' . $Articles->id), $fileName);
+            $file = $request->file('image');
             $Articles->image = $fileName;
         }
+
         $Articles->title = $request->title;
         $Articles->description = $request->description;
         $Articles->content = $request->content;
@@ -141,16 +152,20 @@ class ArticlesController extends Controller
         $Articles->category = $request->category;
         $Articles->published_at = $request->published_at;
         $Articles->save();
+        if(isset($file))
+        {
+            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+        }
         return redirect('admin/articles')->with('message', 'Artikel succesvol gecreëerd.'); 
     }
 
-    function adminCategoriesShow($category)
+    function adminCategoriesShow($category, Article $article)
     {
         $this->authorize('view', $article);
 
         $articles = Article::latest()->where('category', $category)->paginate(6);
         $categories = Category::all();
-        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories]);
+        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories, 'category' => $category]);
     }
     
     function adminEdit(Article $article)
@@ -168,7 +183,6 @@ class ArticlesController extends Controller
         if ($request->hasFile('image')) 
         {
             $fileName = time() . '.' . $request->image->extension();
-            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
             $article->image = $fileName;
         }
 
@@ -178,6 +192,10 @@ class ArticlesController extends Controller
         $article->category = $request->category;
         $article->published_at = $request->published_at;
         $article->update();
+        if(isset($file))
+        {
+            $file->move(public_path('/images/articles/' . $Articles->id), $fileName);
+        }
 
         return back()->with('message', 'Artikel succesvol bewerkt.');
     }

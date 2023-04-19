@@ -26,10 +26,11 @@ class UpdateArticleRequest extends FormRequest
         return [
             'title' => 'required|min:3',
             'category' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'published_at' => 'required',
             'description' => 'required|min:3', 
             'content' => 'required|min:2', 
+
         ];
     }
 
@@ -41,6 +42,7 @@ class UpdateArticleRequest extends FormRequest
     public function messages(): array
     {
         return [
+
             'title.required' => 'De titel is verplicht',
             'title.min' => 'De titel moet minimaal 3 letters bevatten',
             'category.required' => 'De categorie is verplicht',
@@ -52,6 +54,7 @@ class UpdateArticleRequest extends FormRequest
             'description.min' => 'De beschrijving moet minimaal 3 letters bevatten',
             'content.required' => 'De content is verplicht',
             'content.min' => 'De content moet minimaal 2 letters bevatten',
+            
         ];
     }
 }

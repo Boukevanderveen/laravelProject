@@ -33,6 +33,11 @@ class ProjectPolicy
         return true;
     }
 
+    public function adminView(User $user)
+    {
+        return $user->isAdmin;
+    }
+
     /**
      * Determine whether the user can create models.
      *

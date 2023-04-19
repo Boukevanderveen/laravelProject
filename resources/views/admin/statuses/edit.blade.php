@@ -23,7 +23,7 @@
                 <div class="row">
                 <div class="col-7"></div>
                 <div class="col-5">
-                    <a href="/admin/statuses"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                    <a href="{{ route('admin.statuses.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                     <button class="btn btn-primary mb-3">Bevestig</button>
                 </div>
                 </div>

@@ -28,9 +28,9 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'required|max:95',
             'deadline' => 'required',
             'project' => 'required',
-            'assigned_to' => 'required',
+            'member' => 'required',
             'status' => 'required',
-            'is_open' => 'required',
+            'completed' => 'required',
         ];
     }
 
@@ -43,15 +43,15 @@ class UpdateTaskRequest extends FormRequest
     {
         return [
             
-            'name.required' => 'Dit veld is verplicht',
-            'name.max' => 'Dit veld mag niet langer zijn dan 25 letters',
-            'description.required' => 'Dit veld is verplicht',
-            'description.max' => 'Dit veld mag niet langer zijn dan 95 letters',
-            'deadline.required' => 'Dit veld is verplicht',
-            'project.required' => 'Dit veld is verplicht',
-            'assigned_to.required' => 'Dit veld is verplicht',
-            'status.required' => 'Dit veld is verplicht',
-            'is_open.required' => 'Dit veld is verplicht',
+            'name.required' => 'De naam is verplicht',
+            'name.max' => 'De naam mag niet langer zijn dan 25 letters',
+            'description.required' => 'De beschrijving is verplicht',
+            'description.max' => 'De beschrijving mag niet langer zijn dan 95 letters',
+            'deadline.required' => 'De deadline is verplicht',
+            'project.required' => 'Het project is verplicht',
+            'member.required' => 'De medewerker is verplicht',
+            'status.required' => 'De status is verplicht',
+            'is_open.required' => 'Open/afgerond is verplicht',
 
         ];
     }

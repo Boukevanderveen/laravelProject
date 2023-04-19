@@ -24,9 +24,10 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3|unique:users',
-            'email'=>'required|email|unique:users',
-            'password' => 'required|min:6'
+            'name' => 'required|min:3|unique:users,name,' . $this->route('user')->id . ',id',
+            'email'=>'required|email|unique:users,email,' . $this->route('user')->id . ',id',
+            'isadmin'=>'required',
+            
         ];
     }
 
@@ -44,8 +45,7 @@ class UpdateUserRequest extends FormRequest
             'email.required' => 'De email is verplicht',
             'email.unique' => 'Dit E-mailadres is al in gebruik',
             'email.email' => 'Vul een geldig E-mail adres in',
-            'password.required' => 'Het wachtwoord is verplicht',
-            'password.min' => 'Het wachtwoord moet minimaal 6 letters bevatten',
+            'isadmin.required' => 'Het veld privileges is verplicht'
         ];
     }
 }

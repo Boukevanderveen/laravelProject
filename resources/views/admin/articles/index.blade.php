@@ -1,22 +1,24 @@
 @extends('layouts.admin')
 @section('content')
-
-    <script type="text/javascript" src="js/bootstrap/bootstrap-dropdown.js"></script>
     <div class="row">
         <div class="col-10">
             <h1>Artikelen</h1>
         </div>
-        <div class="col-2">
-            <a href="/admin/articles/create"><button class="btn btn-secondary">Nieuw artikel</button></a>
+        <div class="col-2 text-end">
+            <a href="{{ route('admin.articles.create') }}"><button class="btn btn-primary">Nieuw artikel</button></a>
         </div>
     </div>
     <div class="row">
         <div class="col-12 card">
             <table class="table">
                 <thead>
+
                     <select class="form-select w-25 position-absolute top-0 end-0" onchange="location = this.value"
                         name="category" id="category" aria-label="Default select example">
+                        @if(isset($category))
                         <option value="/admin/articles/">Alle artikelen</option>
+                        @endif
+                        <option value="/admin/articles/" selected>@if(isset($category)){{$category}}@else Alle artikelen @endif</option> 
                         @foreach($categories as $category)
                         <option value="/admin/articles/category/{{$category->name}}">{{$category->name}}</option>
                         @endforeach
@@ -25,8 +27,9 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Titel</th>
-                        <th scope="col">Beschrijving</th>
+                        <th scope="col">Geschreven op</th>
                         <th scope="col">Auteur</th>
+                        <th scope="col">Categorie</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -35,12 +38,15 @@
                         <tr>
                             <td>{{ $article->id }}</td>
                             <td>{{ $article->title }}</td>
-                            <td>{{ $article->description }}</td>
+                            <td>{{ $article->created_at->format('d-m-Y')}}</td>
                             <td>{{ $article->author }}</td>
-                            <td><a href="{{ route('admin.articles.edit', $article) }}"><button btn btn-link
-                                        class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a> <a
-                                    href="{{ route('admin.articles.destroy', $article) }}"><button
-                                        class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                            <td>{{ $article->category }}</td>
+                            
+                                <form method="post" action="{{ route('admin.articles.destroy', $article) }}"> @csrf @method('delete')
+                                    <td class="text-end"><a href="{{ route('admin.articles.edit', $article) }}"><button type="button" btn btn-link
+                                        class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
+                                <button type="submit" onclick="return confirm('Weet je zeker dat je {{ $article->title }} wilt verwijderen?')"
+                                        class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>
                         </tr>
                     @endforeach
                 </tbody>
@@ -49,3 +55,4 @@
         </div>
     </div>
 @endsection
+

@@ -7,7 +7,7 @@
     </div>
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="articleform" action="/articles/update">
+            <form method="post" name="articleform" action="{{ route('admin.articles.update') }}" enctype="multipart/form-data">
                 <input value="{{$article->id}}"name="id" type="hidden"> 
 
                 <div class="row mb-3  mt-4">
@@ -76,14 +76,14 @@
 
                 <div class="row mb-3">
                     <div class="col-md-5">
-                        <img src="\images\{{$article->image}}">
+                        <img src="\images\articles{{$article->image}}">
                     </div>
                 </div>
 
                 <div class="row">
                 <div class="col-7"></div>
                 <div class="col-5">
-                    <a href="/articles"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                    <a href="{{ route('articles') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                     <button class="btn btn-primary mb-3">Bevestig</button>
                 </div>
                 </div>
@@ -93,12 +93,5 @@
     </div>
 @endsection
 @section('scripts')
-<script>
-ClassicEditor
-    .create( document.querySelector( '#editor' ) )
-    .catch( error => {
-        console.error( error );
-    } );
-</script>
 </div>
 @endsection

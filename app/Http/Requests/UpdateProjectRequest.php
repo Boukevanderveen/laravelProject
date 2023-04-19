@@ -24,8 +24,8 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
-            'description' => 'required|min:3',
+            'name' => 'required|min:3|unique:projects,name,' . $this->route('project')->id . ',id',
+            'description' => 'required|min:3', 
         ];
     }
 

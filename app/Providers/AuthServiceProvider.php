@@ -18,6 +18,9 @@ class AuthServiceProvider extends ServiceProvider
         Project::class => CategoryPolicy::class,
         Project::class => ProjectPolicy::class,
         Role::class => RolePolicy::class,
+        Product::class => ProductPolicy::class,
+        ProductCategoryPolicy::class => ProductCategoryPolicy::class,
+        Order::class => Order::class,
 
     ];
 

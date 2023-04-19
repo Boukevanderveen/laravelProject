@@ -11,13 +11,14 @@
     <div class="col-4">
     <div class="card d-flex align-items-start">
         @if($article->image)
-        <img class="card-img-top" height="250" src="images/articles/{{$article->image}}" alt="Card image cap">
+        <img class="card-img-top" height="250" src="images/articles/{{$article->id}}/{{$article->image}}" alt="Card image cap">
         @else
         <img class="card-img-top" height="250" src="images/default-img.gif" alt="Card image cap">
         @endif
         <div class="card-body">
             <h5 class="card-title">{{$article->title}}</h5>
             <p class="card-text">{{$article->description}}</p>
+            <small class="text-muted">{{ date('d-m-Y', strtotime($article->published_at)) }}</small> <br>
 
             <a href="{{ route('articles.show', $article) }}" class="btn btn-primary btn-m">Lees artikel</a>
         </div>

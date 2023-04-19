@@ -52,8 +52,10 @@ class StatusesController extends Controller
         return back()->with('message', 'Status succesvol verwijderd.');
     }
 
-    function adminIndex()
+    function adminIndex(Status $status)
     {
+        $this->authorize('adminView', $status);
+
         $statuses = Status::latest()->paginate(6);
         return view('admin.statuses.index', ['statuses' => $statuses]);
     }
@@ -84,7 +86,7 @@ class StatusesController extends Controller
         $this->authorize('update', $status);
         $status->name = $request->name;
         $status->update();
-        return back()->with('message', 'Status succesvol bewerkt.');
+        return redirect('/admin/statuses')->with('message', 'Status succesvol bewerkt.');
     }
 
     function adminDestroy(Request $request, Status $status)

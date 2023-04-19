@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('isAdmin')->after('password');
+            $table->boolean('isAdmin')->after('password')->default('0');
         });
     }
 

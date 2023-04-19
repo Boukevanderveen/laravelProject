@@ -7,7 +7,7 @@
     </div>
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="tasksform" action="{{ route('admin.projects.tasks.update', [$project, $task])}}">
+            <form method="post" name="tasksform" action="{{ route('admin.projects.tasks.tasksupdate', [$project, $task])}}">
                 <input value="{{$task->id}}"name="id" type="hidden"> 
 
                 <div class="row mb-3  mt-4">
@@ -44,9 +44,9 @@
                     <label for="project" class="col-md-4 col-form-label text-md-end">Project:</label>
                     <div class="col-md-5">
                         <select class="form-select @error('project') is-invalid @enderror" name="project" id="project" aria-label="Default select example">
-                            <option value ="{{$task->project->id}}" selected>{{old('assigned_to', $task->project->name)}}</option>
+                            <option value ="{{$task->project->name}}" selected>{{old('project', $task->project->name)}}</option>
                             @foreach ($projects as $project)
-                            <option value="{{ $project->id }}" >{{ $project->name }}</option>
+                            <option value="{{ $project->name }}" >{{ $project->name }}</option>
                             @endforeach
                         </select>
                         @if ($errors->has('projects'))
@@ -55,16 +55,16 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="assigned_to" class="col-md-4 col-form-label text-md-end">Toegewezen aan:</label>
+                    <label for="member" class="col-md-4 col-form-label text-md-end">Toegewezen aan:</label>
                     <div class="col-md-5">
-                        <select class="form-select @error('assigned_to') is-invalid @enderror" name="assigned_to" id="assigned_to" aria-label="Default select example">
-                            <option value ="{{$task->member->id}}" selected>{{old('assigned_to', $task->member->name)}}</option>
-                            @foreach ($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        <select class="form-select @error('member') is-invalid @enderror" name="member" id="member" aria-label="Default select example">
+                            <option value ="{{$task->member->name}}" selected>{{old('member', $task->member->name)}}</option>
+                            @foreach($project->users as $member)
+                            <option value="{{ $member->name}}">{{ $member->name}}</option>
                             @endforeach
                         </select>
-                        @if ($errors->has('assigned_to'))
-                        <div class="invalid-feedback">{{ $errors->first('assigned_to') }}</div>
+                        @if ($errors->has('member'))
+                        <div class="invalid-feedback">{{ $errors->first('member') }}</div>
                         @endif
                     </div>
                 </div>
@@ -73,9 +73,9 @@
                     <label for="status" class="col-md-4 col-form-label text-md-end">Status:</label>
                     <div class="col-md-5">
                         <select class="form-select @error('status') is-invalid @enderror" name="status" id="status" aria-label="Default select example">
-                            <option value ="{{$task->status->id}}" selected>{{old('status', $task->status->name)}}</option>
+                            <option value ="{{old('status', $task->status->name)}}" selected>{{old('status', $task->status->name)}}</option>
                             @foreach ($statuses as $status)
-                            <option value="{{$status->id}}">{{ $status->name }}</option>
+                            <option value="{{$status->name}}">{{ $status->name }}</option>
                             @endforeach
                         </select>
                         @if ($errors->has('status'))
@@ -84,10 +84,11 @@
                     </div>
                 </div>
 
+
                 <div class="row mb-3">
-                    <label for="status" class="col-md-4 col-form-label text-md-end">Open/Afgerond:</label>
+                    <label for="completed" class="col-md-4 col-form-label text-md-end">Open/Afgerond:</label>
                     <div class="col-md-5">
-                        <select class="form-select @error('is_open') is-invalid @enderror" name="is_open" id="is_open" aria-label="Default select example">
+                        <select class="form-select @error('completed') is-invalid @enderror" name="completed" id="completed" aria-label="Default select example">
                             
                             <option value="{{$task->completed}}"selected>
                             @if($task->completed == 1)
@@ -102,8 +103,8 @@
                              @endif
 
                         </select>
-                        @if ($errors->has('is_open'))
-                        <div class="invalid-feedback">{{ $errors->first('is_open') }}</div>
+                        @if ($errors->has('completed'))
+                        <div class="invalid-feedback">{{ $errors->first('completed') }}</div>
                         @endif
                     </div>
                 </div>
@@ -111,11 +112,8 @@
                 <div class="row">
                 <div class="col-7"></div>
                 <div class="col-5">
-                    <a href="/admin/projects/{{$project->id}}/edit"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>                    <button class="btn btn-primary mb-3">Bevestig</button>
+                    <a href="{{ route('admin.projects.edit', $project) }}"><button type="button" class="btn mb-3">Ga terug</button><button class="btn btn-primary mb-3">Bevestig</button>
                 </div>
                 </div>
                 @csrf
-            </form>
-        </div>
-    </div>
-@endsection
+                @endsection

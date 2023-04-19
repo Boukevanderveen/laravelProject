@@ -6,10 +6,14 @@ use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProjectsController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\StatusesController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProductCategoriesController;
+use App\Http\Controllers\OrdersController;
+use Dompdf\Dompdf;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
@@ -26,22 +30,55 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+    Route::get('/invoice', function () {
+        return view('pdf.orders.invoicetemplate');
+    });
+
+    Route::get('/mail', function () {
+        return view('mails.test');
+    });
 
     Route::get('/', function () {
         return view('index');
     });
+    
+    auth::routes();
+
+    Route::group([ 'prefix' => 'orders', 'as' => 'orders.'], function ()
+    {
+        Route::get('create', [OrdersController::class, 'create'])->name('create');
+        Route::post('store', [OrdersController::class, 'store'])->name('store');
+    });
+
+    Route::group([ 'prefix' => 'products', 'as' => 'products.'], function ()
+    {
+        Route::get('', [ProductsController::class, 'index'])->name('index');
+
+        Route::group([ 'prefix' => '{product}'], function ()
+        {
+            Route::get('show', [ProductsController::class, 'show'])->name('show');
+        });
+        
+        Route::get('{search}/search', [ProductsController::class, 'searchIndex']);
+
+        Route::get('cart', [ProductsController::class, 'cart'])->name('cart');
+        Route::post('add-to-cart', [ProductsController::class, 'addToCart'])->name('add.to.cart');
+        Route::patch('update-cart', [ProductsController::class, 'updateCard'])->name('update.cart');
+        Route::delete('remove-from-cart', [ProductsController::class, 'remove'])->name('remove.from.cart');
+
+    });
 
     Route::group([ 'prefix' => 'articles', 'as' => 'articles.'], function ()
     {
-        Route::get('', [ArticlesController::class, 'index']);
-        Route::get('create', [ArticlesController::class, 'create']);
-        Route::post('update', [ArticlesController::class, 'update']);
-        Route::post('store', [ArticlesController::class, 'store']);
+        Route::get('', [ArticlesController::class, 'index'])->name('index');
+        Route::get('create', [ArticlesController::class, 'create'])->name('create');
+        Route::post('update', [ArticlesController::class, 'update'])->name('update');
+        Route::post('store', [ArticlesController::class, 'store'])->name('store');;
         
         Route::group([ 'prefix' => '{article}'], function ()
         {
             Route::get('edit', [ArticlesController::class, 'edit'])->name('edit');
-            Route::get('destroy', [ArticlesController::class, 'destroy'])->name('destroy');
+            Route::delete('destroy', [ArticlesController::class, 'destroy'])->name('destroy');
             Route::get('show', [ArticlesController::class, 'show'])->name('show');
 
         });
@@ -49,27 +86,28 @@ use Illuminate\Support\Facades\Auth;
 
     Route::group([ 'prefix' => 'projects', 'as' => 'projects.'], function ()
     {
-        Route::get('', [ProjectsController::class, 'index']);
-        Route::get('create', [ProjectsController::class, 'create']);
+        Route::get('', [ProjectsController::class, 'index'])->name('index');
+        Route::get('create', [ProjectsController::class, 'create'])->name('create');;
     
-        Route::post('update', [ProjectsController::class, 'update']);
-        Route::post('store', [ProjectsController::class, 'store']);
+        Route::post('update', [ProjectsController::class, 'update'])->name('update');;
+        Route::post('store', [ProjectsController::class, 'store'])->name('store');;
 
         Route::group([ 'prefix' => '{project}'], function ()
         {
             Route::get('edit', [ProjectsController::class, 'edit'])->name('edit');
             Route::get('destroy', [ProjectsController::class, 'destroy'])->name('destroy');
+            Route::get('show', [ProjectsController::class, 'show'])->name('show');
 
-                Route::group([ 'prefix' => 'members'], function ()
+                Route::group([ 'prefix' => 'members.'], function ()
                 {
-                    Route::get('', [ProjectsController::class, 'membersIndex']); 
-                    Route::post('store', [ProjectsController::class, 'membersStore']);
+                    //Route::get('', [ProjectsController::class, 'membersIndex'])->name('index');
+                    Route::post('store', [ProjectsController::class, 'membersStore'])->name('store');
+                    Route::get('membersedit', [ProjectsController::class, 'membersEdit'])->name('membersedit');
 
-                        Route::group([ 'prefix' => '{memberid}'], function ()
+                        Route::group([ 'prefix' => '{member}'], function ()
                         {
-                            Route::get('edit', [ProjectsController::class, 'membersEdit']);
-                            Route::post('update', [ProjectsController::class, 'membersUpdate']); 
-                            Route::get('destroy', [ProjectsController::class, 'rolesMembersDestroy']);
+                            Route::post('update', [ProjectsController::class, 'membersUpdate'])->name('update'); 
+                            Route::get('destroy', [ProjectsController::class, 'rolesMembersDestroy'])->name('destroy');
                         
                         });
                 });
@@ -99,155 +137,169 @@ use Illuminate\Support\Facades\Auth;
         });
     });
 
-    Route::group([ 'prefix' => 'categories', 'as' => 'categories.'], function ()
-    {
- 
-        Route::get('', [CategoriesController::class, 'index']);
-        Route::get('/create', [CategoriesController ::class, 'create']);
-        Route::post('/store', [CategoriesController ::class, 'store']);
-        Route::post('/update', [CategoriesController ::class, 'update']);
-
-            Route::group([ 'prefix' => '{id}'], function ()
-            {
-                Route::get('edit', [CategoriesController::class, 'edit'])->name('edit');
-                Route::get('destroy', [CategoriesController::class, 'destroy'])->name('destroy');
-            });
-
-    });
     
-    Route::group([ 'prefix' => 'users', 'as' => 'users.'], function ()
-    {
 
-        Route::get('', [UsersController::class, 'index']);
-        Route::get('/create', [UsersController ::class, 'create']);
-        Route::post('/store', [UsersController ::class, 'store']);
-        Route::post('/update', [UsersController ::class, 'update']);
-
-            Route::group([ 'prefix' => '{id}'], function ()
-            {
-                Route::get('edit', [UsersController::class, 'edit'])->name('edit');
-                Route::get('destroy', [UsersController::class, 'destroy'])->name('destroy');
-            });
-    });
-
-    Route::group([ 'prefix' => 'roles', 'as' => 'roles.'], function ()
-    {
-
-        Route::get('', [RolesController::class, 'index']);
-        Route::get('create', [RolesController::class, 'create']);
-        Route::post('update', [RolesController::class, 'update']);
-        Route::post('store', [RolesController::class, 'store']);
-
-        Route::group([ 'prefix' => '{role}'], function ()
-        {
-            Route::get('edit', [RolesController::class, 'edit'])->name('edit');
-            Route::get('destroy', [RolesController::class, 'destroy'])->name('destroy');
-        });
-
-    });
-
-    Route::group([ 'prefix' => 'tasks', 'as' => 'tasks.'], function ()
-    {
-        Route::get('', [TasksController::class, 'index']);
-        Route::get('create', [TasksController::class, 'create']);
-        Route::post('store', [TasksController::class, 'store']);
-
-        Route::group([ 'prefix' => '{task}'], function ()
-        {
-            Route::post('update', [TasksController::class, 'update'])->name('update');;
-            Route::get('edit', [TasksController::class, 'edit'])->name('edit');
-            Route::get('destroy', [TasksController::class, 'destroy'])->name('destroy');
-        });
-    });
-    Route::group([ 'prefix' => 'statuses', 'as' => 'statuses.'], function ()
-    {
-        Route::get('', [StatusesController::class, 'index']);
-        Route::get('create', [StatusesController::class, 'create']);
-        Route::post('store', [StatusesController::class, 'store']);
-
-        Route::group([ 'prefix' => '{status}'], function ()
-        {
-        Route::post('update', [StatusesController::class, 'update'])->name('update');
-            Route::get('edit', [StatusesController::class, 'edit'])->name('edit');
-            Route::get('destroy', [StatusesController::class, 'destroy'])->name('destroy');
-        });
-    });
-
-
-Route::group([ 'prefix' => 'admin', 'as' => 'admin.'], function ()
+Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middlware' => ['auth']], function ()
 {
-    Route::get('login', [AuthController::class, 'adminLoginView']);
-    Route::get('logout', [AuthController::class, 'adminLogout']);
-    Route::post('login', [AuthController::class, 'adminLogin']);
+    Route::get('login', [AuthController::class, 'adminLogin'])->name('login');
 
-
-        Auth::routes();
-        Route::get('/', function () {
-            return view('admin.index');
-        });
+        Route::get('', [HomeController::class, 'adminIndex'])->name('index');
         
+        Route::group([ 'prefix' => 'orders', 'as' => 'orders.'], function ()
+        {
+            Route::get('', [OrdersController::class, 'adminIndex'])->name('index');
+            Route::group([ 'prefix' => '{order}'], function ()
+            {
+                Route::post('update', [OrdersController ::class, 'update'])->name('update');
+                Route::get('edit', [OrdersController::class, 'edit'])->name('edit');
+                Route::delete('destroy', [OrdersController::class, 'destroy'])->name('destroy');
+                Route::get('invoice', [OrdersController::class, 'invoice'])->name('invoice');
+
+                Route::group([  'prefix' => 'products', 'as' => 'products.'], function ()
+                {
+                    Route::get('', [OrdersController::class, 'productsIndex'])->name('index');
+                    Route::post('store', [OrdersController::class, 'productsStore'])->name('store');
+                    
+                    Route::group([  'prefix' => '{orderdetail}'], function ()
+                    {
+                        Route::delete('destroy', [OrdersController::class, 'productsDestroy'])->name('destroy');
+
+                    });
+                });
+
+            });
+        });
+
+        Route::group([ 'prefix' => 'products', 'as' => 'products.'], function ()
+        {
+     
+            Route::get('', [ProductsController::class, 'adminIndex'])->name('index');
+            Route::get('create', [ProductsController ::class, 'create'])->name('create');
+            Route::post('store', [ProductsController ::class, 'store'])->name('store');
+    
+                Route::group([ 'prefix' => '{product}'], function ()
+                {
+                    Route::post('update', [ProductsController ::class, 'update'])->name('update');
+                    Route::get('edit', [ProductsController::class, 'edit'])->name('edit');
+                    Route::delete('destroy', [ProductsController::class, 'destroy'])->name('destroy');
+                });
+
+        });
+
+        Route::group([ 'prefix' => 'productcategories', 'as' => 'productcategories.' ], function ()
+        {
+            Route::get('', [ProductCategoriesController::class, 'index'])->name('index');
+            Route::get('create', [ProductCategoriesController ::class, 'create'])->name('create');
+            Route::post('store', [ProductCategoriesController ::class, 'store'])->name('store');
+                    
+            Route::group([ 'prefix' => '{category}'], function ()
+            {
+                Route::post('update', [ProductCategoriesController ::class, 'update'])->name('update');
+                Route::get('edit', [ProductCategoriesController::class, 'edit'])->name('edit');
+                Route::delete('destroy', [ProductCategoriesController::class, 'destroy'])->name('destroy');
+            });
+        });
 
         Route::group([ 'prefix' => 'articles', 'as' => 'articles.'], function ()
         {
             Route::group([ 'prefix' => '{article}'], function ()
             {
                 Route::get('edit', [ArticlesController::class, 'adminEdit'])->name('edit');
-                Route::get('destroy', [ArticlesController::class, 'adminDestroy'])->name('destroy');
+                Route::delete('destroy', [ArticlesController::class, 'adminDestroy'])->name('destroy');
+                Route::post('update', [ArticlesController::class, 'adminUpdate'])->name('update');
             });
 
-            Route::get('', [ArticlesController::class, 'adminIndex']);
-            Route::get('create', [ArticlesController::class, 'adminCreate']);
-            Route::post('update', [ArticlesController::class, 'adminUpdate']);
-            Route::post('store', [ArticlesController::class, 'adminStore']);
+            Route::group([ 'prefix' => 'category'], function ()
+            {
+            Route::get('{category}', [ArticlesController::class, 'adminCategoriesShow']);
+            });
+
+            Route::get('', [ArticlesController::class, 'adminIndex'])->name('index');
+            Route::get('create', [ArticlesController::class, 'adminCreate'])->name('create');
+            Route::post('store', [ArticlesController::class, 'adminStore'])->name('store');
         });
 
     Route::group([ 'prefix' => 'projects', 'as' => 'projects.'], function ()
     {
-        Route::get('', [ProjectsController::class, 'adminIndex']);
-        Route::get('create', [ProjectsController::class, 'adminCreate']);
+        Route::get('', [ProjectsController::class, 'adminIndex'])->name('index');
+        Route::get('create', [ProjectsController::class, 'adminCreate'])->name('create');
     
-        Route::post('update', [ProjectsController::class, 'adminUpdate']);
-        Route::post('store', [ProjectsController::class, 'adminStore']);
+        Route::post('store', [ProjectsController::class, 'adminStore'])->name('store');
 
         Route::group([ 'prefix' => '{project}'], function ()
         {
+
+            Route::post('update', [ProjectsController::class, 'adminUpdate'])->name('update');
             Route::get('edit', [ProjectsController::class, 'adminEdit'])->name('edit');
-            Route::get('destroy', [ProjectsController::class, 'adminDestroy'])->name('destroy');
+            Route::delete('destroy', [ProjectsController::class, 'adminDestroy'])->name('destroy');
 
-                Route::group([ 'prefix' => 'members'], function ()
+            Route::get('members', [ProjectsController::class, 'adminMembersIndex'])->name('members');
+            Route::get('roles', [ProjectsController::class, 'adminRolesIndex'])->name('roles');
+            Route::get('opentasks', [ProjectsController::class, 'adminTasksOpenIndex'])->name('opentasks');
+            Route::get('closedtasks', [ProjectsController::class, 'adminTasksClosedIndex'])->name('closedtasks');
+
+            Route::group([ 'prefix' => 'roles', 'as' => 'roles.'], function ()
+            {
+                Route::post('store', [ProjectsController::class, 'adminRolesStore'])->name('store');
+
+                Route::group([ 'prefix' => '{role}'], function ()
                 {
-                    Route::get('', [ProjectsController::class, 'adminMembersIndex']); 
-                    Route::post('store', [ProjectsController::class, 'adminMembersStore']);
+                Route::get('edit', [ProjectsController::class, 'adminRolesEdit'])->name('edit');
+                Route::delete('destroy', [ProjectsController::class, 'adminRolesDestroy'])->name('destroy');
+                });
 
-                        Route::group([ 'prefix' => '{memberid}'], function ()
+                    Route::group([ 'prefix' => '{member}'], function ()
+                    {
+                        Route::get('membersedit', [ProjectsController::class, 'adminMembersEdit'])->name('membersedit'); 
+
+                    });
+            });
+
+                Route::group([ 'prefix' => 'members', 'as' => 'members.'], function ()
+                {
+                    Route::get('create', [ProjectsController::class, 'create'])->name('memberscreate');
+                    Route::post('store', [ProjectsController::class, 'adminMembersStore'])->name('membersstore');
+
+                        Route::group([ 'prefix' => '{member}'], function ()
                         {
-                            Route::get('edit', [ProjectsController::class, 'adminMembersEdit']);
-                            Route::post('update', [ProjectsController::class, 'adminMembersUpdate']); 
-                            Route::get('destroy', [ProjectsController::class, 'adminRolesMembersDestroy']);
+
+                        Route::get('edit', [ProjectsController::class, 'adminMembersEdit'])->name('membersedit');
+                        Route::post('update', [ProjectsController::class, 'adminMembersUpdate'])->name('membersupdate');
+                        Route::delete('destroy', [ProjectsController::class, 'adminMembersDestroy'])->name('destroy');
+                            Route::get('membersedit', [ProjectsController::class, 'adminMembersEdit'])->name('membersedit'); 
+                            Route::get('destroy', [ProjectsController::class, 'adminMembersDestroy'])->name('membersdestroy');
                         
                         });
                 });
 
                 Route::group([ 'prefix' => 'tasks', 'as' => 'tasks.'], function ()
                 {
-                    Route::post('store', [ProjectsController::class, 'adminTasksStore'])->name('store'); 
+                    Route::post('store', [ProjectsController::class, 'adminTasksStore'])->name('tasksstore'); 
 
                     Route::group([ 'prefix' => '{task}'], function ()
                     {
-                        Route::get('complete', [ProjectsController::class, 'adminTasksComplete'])->name('complete');
-                        Route::get('uncomplete', [ProjectsController::class, 'adminTasksUncomplete'])->name('uncomplete');
+                        Route::get('complete', [ProjectsController::class, 'adminTasksComplete'])->name('taskscomplete');
+                        Route::get('uncomplete', [ProjectsController::class, 'adminTasksUncomplete'])->name('tasksuncomplete');
 
 
-                        Route::get('edit', [ProjectsController::class, 'adminTasksEdit'])->name('edit');
-                        Route::post('update', [ProjectsController::class, 'adminTasksUpdate'])->name('update'); 
-                        Route::get('destroy', [ProjectsController::class, 'adminTasksDestroy'])->name('destroy');
+                        Route::get('edit', [ProjectsController::class, 'adminTasksEdit'])->name('tasksedit');
+                        Route::post('update', [ProjectsController::class, 'adminTasksUpdate'])->name('tasksupdate'); 
+                        Route::delete('destroy', [ProjectsController::class, 'adminTasksDestroy'])->name('tasksdestroy');
                     
                     });
 
-                    Route::group([ 'prefix' => '{sort}'], function ()
+                    Route::group([ 'prefix' => '{status}'], function ()
                     {
-                        Route::get('sortstatus', [ProjectsController::class, 'adminTasksSortStatus'])->name('sortstatus');
-                        Route::get('sortmember', [ProjectsController::class, 'adminTasksSortMember'])->name('sortmember');
+                        Route::get('sortopenstatus', [ProjectsController::class, 'adminTasksOpenSortStatus'])->name('tasksopensortstatus');
+                        Route::get('sortclosedstatus', [ProjectsController::class, 'adminTasksClosedSortStatus'])->name('tasksclosedsortstatus');
+
+
+                    });
+
+                    Route::group([ 'prefix' => '{member}'], function ()
+                    {
+                        Route::get('sortopenmember', [ProjectsController::class, 'adminTasksOpenSortMember'])->name('tasksopensortmember');
+                        Route::get('sortclosedmember', [ProjectsController::class, 'adminTasksClosedSortMember'])->name('tasksclosedsortmember');
 
                     });
                 });
@@ -257,15 +309,15 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.'], function ()
     Route::group([ 'prefix' => 'categories', 'as' => 'categories.'], function ()
     {
  
-        Route::get('', [CategoriesController::class, 'adminIndex']);
-        Route::get('/create', [CategoriesController ::class, 'adminCreate']);
-        Route::post('/store', [CategoriesController ::class, 'adminStore']);
-        Route::post('/update', [CategoriesController ::class, 'adminUpdate']);
+        Route::get('', [CategoriesController::class, 'adminIndex'])->name('index');
+        Route::get('create', [CategoriesController ::class, 'adminCreate'])->name('create');
+        Route::post('store', [CategoriesController ::class, 'adminStore'])->name('store');
 
-            Route::group([ 'prefix' => '{id}'], function ()
+            Route::group([ 'prefix' => '{category}'], function ()
             {
+                Route::post('update', [CategoriesController ::class, 'adminUpdate'])->name('update');
                 Route::get('edit', [CategoriesController::class, 'adminEdit'])->name('edit');
-                Route::get('destroy', [CategoriesController::class, 'adminDestroy'])->name('destroy');
+                Route::delete('destroy', [CategoriesController::class, 'adminDestroy'])->name('destroy');
             });
 
     });
@@ -273,58 +325,64 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.'], function ()
     Route::group([ 'prefix' => 'users', 'as' => 'users.'], function ()
     {
 
-        Route::get('', [UsersController::class, 'adminIndex']);
-        Route::get('/create', [UsersController ::class, 'adminCreate']);
-        Route::post('/store', [UsersController ::class, 'adminStore']);
-        Route::post('/update', [UsersController ::class, 'adminUpdate']);
+        Route::get('', [UsersController::class, 'adminIndex'])->name('index');
+        Route::get('create', [UsersController ::class, 'adminCreate'])->name('create');
+        Route::post('store', [UsersController ::class, 'adminStore'])->name('store');
 
-            Route::group([ 'prefix' => '{id}'], function ()
+            Route::group([ 'prefix' => '{user}'], function ()
             {
+                Route::post('update', [UsersController ::class, 'adminUpdate'])->name('update');
                 Route::get('edit', [UsersController::class, 'adminEdit'])->name('edit');
-                Route::get('destroy', [UsersController::class, 'adminDestroy'])->name('destroy');
+                Route::delete('destroy', [UsersController::class, 'adminDestroy'])->name('destroy');
             });
     });
 
     Route::group([ 'prefix' => 'roles', 'as' => 'roles.'], function ()
     {
 
-        Route::get('', [ProjectsController::class, 'adminRolesIndex']);
-        Route::get('create', [RolesController::class, 'adminCreate']);
-        Route::post('update', [RolesController::class, 'adminUpdate']);
-        Route::post('store', [RolesController::class, 'adminStore']);
+        Route::get('', [RolesController::class, 'adminIndex'])->name('index');
+        Route::get('create', [RolesController::class, 'adminCreate'])->name('create');
+        Route::post('store', [RolesController::class, 'adminStore'])->name('store');
 
         Route::group([ 'prefix' => '{role}'], function ()
         {
+            Route::post('update', [RolesController::class, 'adminUpdate'])->name('update');
             Route::get('edit', [RolesController::class, 'adminEdit'])->name('edit');
-            Route::get('destroy', [RolesController::class, 'adminDestroy'])->name('destroy');
+            Route::delete('destroy', [RolesController::class, 'adminDestroy'])->name('destroy');
         });
+
 
     });
 
     Route::group([ 'prefix' => 'tasks', 'as' => 'tasks.'], function ()
     {
-        Route::get('', [TasksController::class, 'adminIndex']);
-        Route::get('create', [TasksController::class, 'adminCreate']);
-        Route::post('store', [TasksController::class, 'adminStore']);
+        Route::get('', [TasksController::class, 'adminIndex'])->name('index');
+        Route::get('create', [TasksController::class, 'adminCreate'])->name('create');
+        Route::post('store', [TasksController::class, 'adminStore'])->name('store');
 
         Route::group([ 'prefix' => '{task}'], function ()
         {
-            Route::post('update', [TasksController::class, 'adminUpdate'])->name('update');;
+            Route::get('complete', [TasksController::class, 'complete'])->name('complete');
+            Route::get('uncomplete', [TasksController::class, 'uncomplete'])->name('uncomplete');
+
+            Route::post('update', [TasksController::class, 'adminUpdate'])->name('update');
             Route::get('edit', [TasksController::class, 'adminEdit'])->name('edit');
-            Route::get('destroy', [TasksController::class, 'adminDestroy'])->name('destroy');
+            Route::delete('destroy', [TasksController::class, 'adminDestroy'])->name('destroy');
         });
     });
+
     Route::group([ 'prefix' => 'statuses', 'as' => 'statuses.'], function ()
     {
-        Route::get('', [StatusesController::class, 'adminIndex']);
-        Route::get('create', [StatusesController::class, 'adminCreate']);
-        Route::post('store', [StatusesController::class, 'adminStore']);
+        Route::get('', [StatusesController::class, 'adminIndex'])->name('index');
+        Route::get('create', [StatusesController::class, 'adminCreate'])->name('create');
+        Route::post('store', [StatusesController::class, 'adminStore'])->name('store');
 
         Route::group([ 'prefix' => '{status}'], function ()
         {
         Route::post('update', [StatusesController::class, 'adminUpdate'])->name('update');
             Route::get('edit', [StatusesController::class, 'adminEdit'])->name('edit');
-            Route::get('destroy', [StatusesController::class, 'adminDestroy'])->name('destroy');
+            Route::delete('destroy', [StatusesController::class, 'adminDestroy'])->name('destroy');
         });
     });
 });
+

@@ -32,7 +32,12 @@ class ArticlePolicy
      */
     public function view(User $user, Article $article)
     {
-        return true;
+        return $user->isAdmin;
+    }
+
+    public function adminView(User $user)
+    {
+        return $user->isAdmin;
     }
 
     /**

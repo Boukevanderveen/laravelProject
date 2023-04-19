@@ -95,12 +95,7 @@
             <h5 class="card-title">{{$member->name}}</h5>
             <p class="card-text">{{ $member->role }}</p>
 
-            @can('updateMember', $project)
-            <a href="members/{{ $member->id }}/update"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a>            
-            @endcan
-            @can('deleteMember', $project)
-            <a href="/projects/members/{{ $member->id }}/{{ $project->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a>            
-            @endcan
+         
         </div>
     </div>
 </div>
@@ -126,7 +121,7 @@
                     <div class="card d-flex align-items-start">
 
                         <div class="card-body">
-                            <h5 class="card-title">{{$task->deadline}}</h5>
+                            <h5 class="card-title">{{$task->deadline->format('d-m-Y')}}</h5>
                             <p class="card-text">{{ $task->name }}</p>
                             <p class="card-text">{{ $task->member->name }}</p>
                             <p class="card-text">{{ $task->status->name }}</p>
@@ -135,10 +130,11 @@
                             <a href="{{ route('projects.tasks.complete', [$project, $task]) }}"><button lass="btn btn-link link-dark"><i class="fa fa-check"></i></a>
                             @endcan
                             @can('updateMember', $project)
-                            <a href="members/{{ $member->id }}/update"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a>            
+                            <a href="{{ route('admin.projects.members.update', [$member->id, $project->id]) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a>            
                             @endcan
                             @can('deleteMember', $project)
-                            <a href="/projects/members/{{ $member->id }}/{{ $project->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a>            
+                            <a href="{{ route('admin.projects.members.delete', [$member->id, $project->id]) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a>            
+                            
                             @endcan
                         </div>
                     </div>
@@ -166,7 +162,7 @@
                     <div class="card d-flex align-items-start">
 
                         <div class="card-body">
-                            <h5 class="card-title">{{$task->deadline}}</h5>
+                            <h5 class="card-title">{{$task->deadline->format('d-m-Y')}}</h5>
                             <p class="card-text">{{ $task->name }}</p>
                             <p class="card-text">{{ $task->member->name }}</p>
                             <p class="card-text">{{ $task->status->name }}</p>
@@ -175,10 +171,11 @@
                             <a href="{{ route('projects.tasks.complete', [$project, $task]) }}"><button lass="btn btn-link link-dark"><i class="fa fa-check"></i></a>
                             @endcan
                             @can('updateMember', $project)
-                            <a href="members/{{ $member->id }}/update"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a>            
+                            <a href="{{ route('admin.projects.members.update', [$member->id, $project->id]) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a>            
                             @endcan
                             @can('deleteMember', $project)
-                            <a href="/projects/members/{{ $member->id }}/{{ $project->id }}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a>            
+                            <a href="{{ route('admin.projects.members.delete', [$member->id, $project->id]) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a>            
+                            
                             @endcan
                         </div>
                     </div>
@@ -325,16 +322,16 @@
                 </div>
     
                 <div class="row mb-3">
-                    <label for="assigned_to" class="col-md-4 col-form-label text-md-end">Toegewezen aan:</label>
+                    <label for="member" class="col-md-4 col-form-label text-md-end">Toegewezen aan:</label>
                     <div class="col-md-5">
-                        <select class="form-select @error('assigned_to') is-invalid @enderror" name="assigned_to" id="assigned_to" aria-label="Default select example">
+                        <select class="form-select @error('member') is-invalid @enderror" name="member" id="member" aria-label="Default select example">
                             <option selected></option>
                             @foreach($project->users as $member)
                             <option value="/articles/category/">{{$member->name}}</option>
                             @endforeach
                         </select>
-                        @if ($errors->has('assigned_to'))
-                        <div class="invalid-feedback">{{ $errors->first('assigned_to') }}</div>
+                        @if ($errors->has('member'))
+                        <div class="invalid-feedback">{{ $errors->first('member') }}</div>
                         @endif
                     </div>
                 </div>
@@ -357,7 +354,7 @@
                 <div class="row">
                 <div class="col-7"></div>
                 <div class="col-5">
-                    <a href="/tasks"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                    <a href="{{ route('admin.tasks.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                     <button class="btn btn-primary mb-3">Bevestig</button>
                 </div>
                 </div>
@@ -369,21 +366,3 @@
       </div>
     </div>
   </div>
-  <script>
-
-    $('#myTab a').click(function(e) {
-      e.preventDefault();
-      $(this).tab('show');
-    });
-    
-    // store the currently selected tab in the hash value
-    $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
-      var id = $(e.target).attr("href").substr(1);
-      window.location.hash = id;
-    });
-    
-    // on load of the page: switch to the currently selected tab
-    var hash = window.location.hash;
-    $('#myTab a[href="' + hash + '"]').tab('show');
-    
-    </script>

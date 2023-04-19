@@ -10,7 +10,7 @@
 </div>
 <div class="row">
     <div class="col-12 card">
-        <form method="post" name="articleform" action="/articles/store" enctype="multipart/form-data">
+        <form method="post" name="articleform" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data">
 
             <div class="row mb-3 mt-5">
                 <label for="title" class="col-md-4 col-form-label text-md-end">Titel:</label>
@@ -81,7 +81,7 @@
             <div class="row">
             <div class="col-7"></div>
             <div class="col-5">
-                <a href="/articles"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                <a href="{{ route('articles.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                 <button class="btn btn-primary mb-3">Bevestig</button>
             </div>
             </div>

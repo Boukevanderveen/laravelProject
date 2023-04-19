@@ -210,6 +210,10 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Input' => Illuminate\Support\Facades\Request::class,
+
     ])->toArray(),
+
+    'PDF' => Praem90\PDF\Facade::class,
 
 ];

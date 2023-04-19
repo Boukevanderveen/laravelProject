@@ -19,6 +19,15 @@ class LoginController extends Controller
     |
     */
 
+    /**
+     * Check user's role and redirect user based on their role
+     * @return 
+     */
+    public function authenticated()
+    {
+        return redirect('');
+    }
+
     use AuthenticatesUsers;
 
     /**

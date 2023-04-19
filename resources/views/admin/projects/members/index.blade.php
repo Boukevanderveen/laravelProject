@@ -1,17 +1,16 @@
 @extends('layouts.admin')
 @section('content')
-<div class="row">
-    <div class="col-10">
-        <h1>{{$project->name}} leden</h1>
-    </div>
-    <div class="col-2">
-        <h1><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" data-keyboard="true">
-            Lid toevoegen
-          </button>
-        </h1>    
-    </div>
-</div>
-    <div class="row">
+@include('includes.admin.projecttabs')
+
+        <div class="row mt-2">
+            <div class="col-10">
+                <h1> Leden </h1>
+            </div>
+            <div class="col-2 text-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMemberModal" data-keyboard="true">Nieuw lid</button>
+            </div>
+        </div>
+        <div class="row">
         <div class="col-12 card">
 
             <table class="table">
@@ -28,47 +27,50 @@
                         <tr>
                             <td>{{ $member->id }}</td>
                             <td>{{ $member->name }}</td>
-                            <td>{{ $member->pivot->role }}</td>
-                            <td><a href="members/{{$member->id}}/update"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="/admin/projects/members/{{ $member->id }}/{{$project->id}}/delete"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                            <td>{{ $member->pivot->role->name }}</td>
+                                <form method="post" action="{{ route('admin.projects.members.membersdestroy', [$project, $member]) }}"> @csrf @method('delete')
+                                    <td class="text-end"><a href="{{ route('admin.projects.members.membersedit', [$project, $member->id]) }}"><button type="button" btn btn-link
+                                        class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
+                                <button type="submit" onclick="return confirm('Weet je zeker dat je {{ $member->name }} wilt verwijderen?')"
+                                        class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>
                         </tr>
-                        
                     @endforeach
                 </tbody>
             </table>
-            
         </div>
     </div>
+
 @endsection
-  
-  <!-- The Modal -->
-  <div class="modal fade modal-lg" id="myModal" tabindex="-1">
+
+<div class="modal fade modal-lg" id="newMemberModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
   
-        <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title">Lid toevoegen</h4>
+          <h4 class="modal-title">Nieuw lid</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
   
-        <!-- Modal body -->
         <div class="modal-body">
-            <form method="post" name="postform" action="members/create">
+            <form method="post" name="postform" action="{{ route('admin.projects.members.membersstore', [$project]) }}">
 
                 <div class="row mb-3 mt-3">
                     <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                     <div class="col-md-5">
-                        <input type="name" id="name" name="name" class="form-control" autofocus />
+                        <select class="form-select" name="userid" id="userid" aria-label="Default select example"   autofocus>
+                            @foreach ($usersProject as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select> 
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <label for="role" class="col-md-4 col-form-label text-md-end">Rol:</label>
                     <div class="col-md-5">
-                        <select class="form-select" name="role" id="role" aria-label="Default select example" autofocus>
-                            <option selected></option>
+                        <select class="form-select" name="roleid" id="roleid" aria-label="Default select example"   autofocus>
                             @foreach ($roles as $role)
-                            <option value="{{ $role->name }}">{{ $role->name }}</option>
+                            <option value="{{ $role->id }}">{{ $role->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -84,12 +86,6 @@
 
             </form>
         </div>
-  
-        <!-- Modal footer -->
-        <div class="modal-footer">
-
-        </div>
-  
       </div>
     </div>
   </div>

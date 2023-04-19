@@ -24,11 +24,10 @@ class TasksController extends Controller
     function create(Task $task)
     {
         $this->authorize('create', $task);
-        $users = User::All();
         $projects = Project::All();
         $statuses = Status::All();
 
-        return view('tasks.create', ['users' => $users, 'statuses' => $statuses, 'projects' => $projects]);
+        return view('tasks.create', ['statuses' => $statuses, 'projects' => $projects]);
     }
 
     function store(StoreTaskRequest $request, Task $task)
@@ -39,7 +38,6 @@ class TasksController extends Controller
         $Tasks->description = $request->description;
         $Tasks->deadline = $request->deadline;
         $Tasks->project_id = $request->project;
-        $Tasks->member_id = $request->assigned_to;
         $Tasks->status_id = $request->status;
         $Tasks->assigned_by_id = Auth::user()->id;
         $Tasks->completed = 0;
@@ -68,7 +66,7 @@ class TasksController extends Controller
         $task->member_id = $request->assigned_to;
         $task->status_id = $request->status;
         $task->assigned_by_id = Auth::user()->id;
-        $task->completed = $request->is_open;
+        $task->completed = $request->completed;
         $task->update();
         return back()->with('message', 'Taak succesvol bewerkt.');
     }
@@ -80,8 +78,10 @@ class TasksController extends Controller
         return back()->with('message', 'Taak succesvol verwijderd.');
     }
 
-    function adminIndex()
+    function adminIndex(Task $task)
     {
+        $this->authorize('adminView', $task);
+
         $tasks = Task::latest()->paginate(6);
         return view('admin.tasks.index', ['tasks' => $tasks]);
     }
@@ -98,14 +98,18 @@ class TasksController extends Controller
 
     function adminStore(StoreTaskRequest $request, Task $task)
     {
+        $project = Project::where('name','LIKE','%'.$request->project.'%')->first();
+        $member = User::where('name','LIKE','%'.$request->member.'%')->first();
+        $status = Status::where('name','LIKE','%'.$request->status.'%')->first();
+
         $this->authorize('create', $task);
         $Tasks = new Task;
         $Tasks->name = $request->name;
         $Tasks->description = $request->description;
         $Tasks->deadline = $request->deadline;
-        $Tasks->project_id = $request->project;
-        $Tasks->member_id = $request->assigned_to;
-        $Tasks->status_id = $request->status;
+        $Tasks->project_id = $project->id;
+        $Tasks->member_id = $member->id;
+        $Tasks->status_id = $status->id;
         $Tasks->assigned_by_id = Auth::user()->id;
         $Tasks->completed = 0;
         $Tasks->save();
@@ -125,15 +129,19 @@ class TasksController extends Controller
 
     function adminUpdate(UpdateTaskRequest $request, Task $task)
     {
+        $project = Project::where('name','LIKE','%'.$request->project.'%')->first();
+        $member = User::where('name','LIKE','%'.$request->member.'%')->first();
+        $status = Status::where('name','LIKE','%'.$request->status.'%')->first();
+
         $this->authorize('update', $task);
         $task->name = $request->name;
         $task->description = $request->description;
         $task->deadline = $request->deadline;
-        $task->project_id = $request->project;
-        $task->member_id = $request->assigned_to;
-        $task->status_id = $request->status;
+        $task->project_id = $project->id;
+        $task->member_id = $member->id;
+        $task->status_id = $status->id;
         $task->assigned_by_id = Auth::user()->id;
-        $task->completed = $request->is_open;
+        $task->completed = $request->completed;
         $task->update();
         return back()->with('message', 'Taak succesvol bewerkt.');
     }
@@ -143,5 +151,21 @@ class TasksController extends Controller
         $this->authorize('delete', $task);
         $task->delete();
         return back()->with('message', 'Taak succesvol verwijderd.');
+    }
+
+    function complete(Project $project, Task $task)
+    {
+        $this->authorize('update', $task);
+        $task->completed = 1;
+        $task->update();
+        return back();
+    }
+
+    function uncomplete(Project $project, Task $task)
+    {
+        $this->authorize('update', $task);
+        $task->completed = 0;
+        $task->update();
+        return back();
     }
 }

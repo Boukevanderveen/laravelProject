@@ -73,7 +73,7 @@ class AuthController extends Controller
             }
             else
             {
-                return redirect('admin/home');
+                return redirect('admin');
             }
             } else {
                 return back()->withErrors( "Invalid credentials"); // auth fail redirect with error
@@ -85,7 +85,7 @@ class AuthController extends Controller
     {
         Auth::logout();
         
-        return redirect('/admin/login')->with('message', 'Je bent succesvol uitgelogd');
+        return redirect('/')->with('message', 'Je bent succesvol uitgelogd');
     }
 
     function register(Request $request)
@@ -126,12 +126,6 @@ class AuthController extends Controller
     function logout()
     {
         Auth::logout();
-        return redirect("/home")->with('success', 'Logout successfully');;
-    }
-
-    function navigateToDashboard()
-    {
-        $articles = Article::All();
-        return view('dashboard', ['articles' => $articles]);
+        return redirect("")->with('message', 'Je bent succesvol uitgelogt');
     }
 }

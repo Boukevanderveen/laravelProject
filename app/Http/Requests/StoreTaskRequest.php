@@ -28,7 +28,7 @@ class StoreTaskRequest extends FormRequest
             'description' => 'required|max:95',
             'deadline' => 'required',
             'project' => 'required',
-            'assigned_to' => 'required',
+            'member' => 'required',
             'status' => 'required',
         ];
     }
@@ -42,13 +42,13 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             
-            'name.required' => 'Dit veld is verplicht',
-            'description.required' => 'Dit veld is verplicht',
+            'name.required' => 'De naam is verplicht',
+            'description.required' => 'De beschrijving is verplicht',
             'description.max' => 'De beschrijving mag niet langer dan 95 letters zijn',
-            'deadline.required' => 'Dit veld is verplicht',
-            'project.required' => 'Dit veld is verplicht',
-            'assigned_to.required' => 'Dit veld is verplicht',
-            'status.required' => 'Dit veld is verplicht',
+            'deadline.required' => 'De deadline is verplicht',
+            'project.required' => 'Het project is verplicht',
+            'member.required' => 'De medewerker is verplicht',
+            'status.required' => 'De status is verplicht',
 
         ];
     }

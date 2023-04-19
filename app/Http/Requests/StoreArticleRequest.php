@@ -29,7 +29,7 @@ class StoreArticleRequest extends FormRequest
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
             'published_at' => 'required',
             'description' => 'required|min:3', 
-            'content' => 'required|min:2', 
+            'content' => 'required|min:2',
 
         ];
     }

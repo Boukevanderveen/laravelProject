@@ -7,7 +7,7 @@
 </div>
 <div class="row">
     <div class="col-12 card">
-        <form method="post" name="categoryform" action="/admin/categories/store">
+        <form method="post" name="categoryform" action="{{ route('admin.categories.store') }}">
             <input type="hidden"> 
 
             <div class="row mb-3  mt-4">
@@ -23,7 +23,7 @@
             <div class="row">
             <div class="col-7"></div>
             <div class="col-5">
-                <a href="/admin/categories"><button type="button" class="btn btn-secondary mb-3">Ga terug</button></a>
+                <a href="{{ route('admin.categories.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
                 <button class="btn btn-primary mb-3">Bevestig</button>
             </div>
             </div>

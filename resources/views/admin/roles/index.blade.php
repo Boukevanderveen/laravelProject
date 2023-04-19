@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 @section('content')
 
-<div class="row">
-    <div class="col-10">
+<div class="row ">
+    <div class="col-10 mt-2">
         <h1> Rollen </h1>
     </div>
-    <div class="col-2">
-        <a href="/admin/roles/create"><button class="btn btn-secondary">Nieuwe rol</button></a>
+    <div class="col-2 text-end">
+        <a href="{{ route('admin.roles.create') }}"><button class="btn btn-primary">Nieuwe rol</button></a>
     </div>
 </div>
 
@@ -17,6 +17,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Naam</th>
+                    <th scope="col">Gemaakt op</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -25,12 +26,43 @@
                     <tr>
                         <td>{{ $role->id }}</td>
                         <td>{{ $role->name }}</td>
-                        <td> <a href="{{ route('admin.roles.edit', $role) }}"><button class="btn btn-link link-dark"><i class="fa fa-pencil"></i></button></a><a href="{{ route('admin.roles.destroy', $role) }}"><button class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></a></td>
+                        <td>{{ $role->created_at->format('d-m-Y') }}</td>
+
+                        <form method="post" action="{{ route('admin.roles.destroy', $role) }}"> @csrf @method('delete')
+                            <td class="text-end"><a href="{{ route('admin.roles.edit', $role) }}"><button type="button" btn btn-link
+                                class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
+                        <button type="submit" onclick="return confirm('Weet je zeker dat je {{ $role->name }} wilt verwijderen?')"
+                                class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>  
                     	
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        {{ $roles->links() }}
     </div>    
 </div>
+@if(!$roles->isEmpty())
+<div class="modal fade modal-lg" id="confirmdeletionmodal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Artikel verwijderen</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <div class="modal-body">
+            <div class="modal-body">
+                Weet u zeker dat u deze rol wilt verwijderen?
+               </div>
+        </div>
+  
+        <div class="modal-footer">
+            <form action="{{ route('admin.roles.destroy', $role) }}" method="get">@csrf<button type="submit" class="btn btn-danger" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Toch verwijderen</button></form>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  @endif
 @endsection

@@ -30,7 +30,12 @@ class RolePolicy
      */
     public function view(User $user, Role $role)
     {
-        //
+        return $user->isAdmin;
+    }
+
+    public function adminView(User $user)
+    {
+        return $user->isAdmin;
     }
 
     /**
