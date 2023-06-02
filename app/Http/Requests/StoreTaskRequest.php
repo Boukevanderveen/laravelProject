@@ -24,8 +24,8 @@ class StoreTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'description' => 'required|max:95',
+            'name' => 'required|max:55',
+            'description' => 'required|max:255',
             'deadline' => 'required',
             'project' => 'required',
             'member' => 'required',
@@ -41,10 +41,10 @@ class StoreTaskRequest extends FormRequest
     public function messages(): array
     {
         return [
-            
             'name.required' => 'De naam is verplicht',
+            'name.max' => 'De naam mag niet meer dan :max karakters bevatten',
             'description.required' => 'De beschrijving is verplicht',
-            'description.max' => 'De beschrijving mag niet langer dan 95 letters zijn',
+            'description.max' => 'De beschrijving mag niet langer dan :max letters zijn',
             'deadline.required' => 'De deadline is verplicht',
             'project.required' => 'Het project is verplicht',
             'member.required' => 'De medewerker is verplicht',

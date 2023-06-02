@@ -5,6 +5,12 @@
         <h1>Creëer taak</h1>
     </div>
 </div>
+<script>
+// In your Javascript (external .js resource or <script> tag)
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+</script>
 <div class="row">
     <div class="col-12 card">
         <form method="post" name="taskform" action="/admin/tasks/store">
@@ -43,8 +49,12 @@
             <div class="row mb-3">
                 <label for="project" class="col-md-4 col-form-label text-md-end">Project:</label>
                 <div class="col-md-5">
-                    <select class="form-select @error('project') is-invalid @enderror" name="project" id="project" aria-label="Default select example">
+                    <select placeholder="Selecteer een project" class="form-select js-example-basic-single @error('project') is-invalid @enderror" name="project" id="project" aria-label="Default select example">
+                        @if(is_null( old('project')))
+                        <option value="" disabled selected>Selecteer een project...</option>
+                        @else
                         <option value ="{{old('project')}}" selected>{{old('project')}}</option>
+                        @endif
                         @foreach ($projects as $project)
                         <option value="{{ $project->name }}" >{{ $project->name }}</option>
                         @endforeach
@@ -57,8 +67,12 @@
             <div class="row mb-3">
                 <label for="member" class="col-md-4 col-form-label text-md-end">Toegewezen aan:</label>
                 <div class="col-md-5">
-                    <select class="form-select @error('member') is-invalid @enderror" name="member" id="member" aria-label="Default select example">
+                    <select class="js-example-basic-single form-select @error('member') is-invalid @enderror" name="member" id="member" aria-label="Default select example">
+                        @if(is_null( old('member')))
+                        <option value="" disabled selected>Selecteer een gebruiker...</option>
+                        @else
                         <option value ="{{old('member')}}" selected>{{old('member')}}</option>
+                        @endif
                         @foreach($project->users as $member)
                         <option value="{{ $member->name}}">{{ $member->name}}</option>
                         @endforeach
@@ -72,8 +86,12 @@
             <div class="row mb-3">
                 <label for="status" class="col-md-4 col-form-label text-md-end">Status:</label>
                 <div class="col-md-5">
-                    <select class="form-select @error('status') is-invalid @enderror" name="status" id="status" aria-label="Default select example">
+                    <select class="js-example-basic-single form-select @error('status') is-invalid @enderror" name="status" id="status" aria-label="Default select example">
+                        @if(is_null( old('status')))
+                        <option value="" disabled selected>Selecteer een status...</option>
+                        @else
                         <option value ="{{old('status')}}" selected>{{old('status')}}</option>
+                        @endif
                         @foreach ($statuses as $status)
                         <option value="{{$status->name}}">{{ $status->name }}</option>
                         @endforeach

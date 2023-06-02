@@ -60,4 +60,14 @@ class ProductCategoriesController extends Controller
         }
  
     }
+
+    public function searchIndex(ProductCategory $category, Request $request)
+    {
+        $this->authorize('view', $category);
+
+        $categories = ProductCategory::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.productcategories.index', ['categories' => $categories, 'search_term' => $request->search_term]);
+    }
 }

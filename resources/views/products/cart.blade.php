@@ -110,7 +110,7 @@
     @endguest
     @auth
         <a href="{{ route('products.index') }}"><button type="button" class="btn mt-3 ">Ga terug</button></a>
-        <a href="{{ route('orders.create') }}"><button class="btn btn-primary mt-3 ">Ga verder naar de kassa</button></a>
+        <a href="{{ route('orders.adresses.delivery.create') }}"><button class="btn btn-primary mt-3 ">Ga verder naar de kassa</button></a>
         @endauth
 </div>
 </div>

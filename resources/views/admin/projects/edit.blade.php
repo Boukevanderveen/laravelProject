@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-@include('includes.admin.projecttabs')
 
     <div class="row">
         <div class="tab-content" id="myTabContent">
@@ -11,6 +10,7 @@
                         <h1> Project </h1>
                     </div>
                 </div>
+                @include('includes.admin.projecttabs')
                 <div class="col-12 card">
                     <form method="post" name="projectform" action="{{ route('admin.projects.update', $project) }}"> <!-- route('route', $model) -->
                         <input value="{{ $project->id }}"name="id" type="hidden">
@@ -28,8 +28,7 @@
                         <div class="row mb-3">
                             <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                             <div class="col-md-5">
-                                <input value="{{ $project->description }}" id="description" type="text"
-                                    class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>
+                                <textarea rows="5" id="description" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>{{old('description', $project->description)}} </textarea>
                                     @if ($errors->has('description'))
                                     <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                                     @endif

@@ -57,4 +57,14 @@ class CategoriesController extends Controller
         $category->delete();  
         return back()->with('message', 'Categorie succesvol verwijderd.');
     }
+
+    public function searchIndex(Category $category, Request $request)
+    {
+        $this->authorize('view', $category);
+
+        $categories = Category::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.categories.index', ['categories' => $categories, 'search_term' => $request->search_term]);
+    }
 }

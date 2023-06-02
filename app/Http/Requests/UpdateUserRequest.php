@@ -24,8 +24,8 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3|unique:users,name,' . $this->route('user')->id . ',id',
-            'email'=>'required|email|unique:users,email,' . $this->route('user')->id . ',id',
+            'name' => 'required|min:3|max:55|unique:users,name,' . $this->route('user')->id . ',id',
+            'email'=>'required|email|max:255|unique:users,email,' . $this->route('user')->id . ',id',
             'isadmin'=>'required',
             
         ];
@@ -41,6 +41,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name.required' => 'De naam is verplicht',
             'name.min' => 'De naam moet minimaal 3 letters bevatten',
+            'name.max' => 'De naam mag niet meer dan :max karakters bevatten',
             'name.unique' => 'Deze naam is al in gebruik',
             'email.required' => 'De email is verplicht',
             'email.unique' => 'Dit E-mailadres is al in gebruik',

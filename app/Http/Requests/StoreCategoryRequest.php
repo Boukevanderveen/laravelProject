@@ -24,7 +24,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:2|unique:categories',    
+            'name' => 'required|min:2|max:55|unique:categories',    
         ];
     }
 
@@ -39,6 +39,7 @@ class StoreCategoryRequest extends FormRequest
             
             'name.required' => 'De naam is verplicht',
             'name.min' => 'De naam moet minimaal 2 letters bevatten',
+            'name.max' => 'De naam mag niet meer dan :max karakters bevatten',
             'name.unique' => 'Er is al een categorie met deze naam',
 
         ];

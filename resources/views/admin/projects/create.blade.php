@@ -22,7 +22,7 @@
             <div class="row mb-3">
                 <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                 <div class="col-md-5">
-                    <input value="{{old('description')}}" id="description" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>
+                    <textarea rows="5" id="description" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>{{old('description')}}</textarea>
                     @if ($errors->has('description'))
                     <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                     @endif  

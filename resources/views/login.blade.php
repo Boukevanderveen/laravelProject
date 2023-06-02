@@ -31,7 +31,6 @@
                         <button class="btn btn-primary mb-3">Bevestig</button>
                     </div>
                 </div>
-                @csrf
             </form>
         </div>
     </div>

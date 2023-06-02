@@ -55,6 +55,8 @@
                         <div class="row mb-3">
                             <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                             <div class="col-md-5">
+                    <textarea rows="5" id="description" type="text" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>{{old('description')}}</textarea>
+
                                 <input value="{{ $project->description }}" id="description" type="text"
                                     class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>
                                     @if ($errors->has('description'))

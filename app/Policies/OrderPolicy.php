@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Auth;
 
 class OrderPolicy
 {
@@ -16,9 +17,12 @@ class OrderPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user, Order $order)
     {
-        //
+        if($user->isAdmin){
+            return $user->isAdmin;
+        }
+        return $user->id == $order->user_id;
     }
 
     /**

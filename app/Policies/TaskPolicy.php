@@ -30,7 +30,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task)
     {
-        //
+        return $user->isAdmin;
     }
 
     public function adminView(User $user)

@@ -1,15 +1,15 @@
 @extends('layouts.admin')
 @section('content')
-@include('includes.admin.projecttabs')
 
     <div class="row">
         <div class="col-12">
             <h1>Bewerk rol</h1>
         </div>
     </div>
+@include('includes.admin.projecttabs')
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="projectrolesform" action="{{ route('admin.projects.roles.update', $role) }}">
+            <form method="post" name="projectrolesform" action="{{ route('admin.projects.roles.update', [$project, $role]) }}">
                 <input value="{{$role->id}}"name="id" type="hidden"> 
 
                 <div class="row mb-3  mt-4">
@@ -23,9 +23,8 @@
                 </div>
 
                 <div class="row">
-                <div class="col-7"></div>
-                <div class="col-5">
-                    <a href="{{ route('admin.articles.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
+                <div class="col-8"></div>
+                <div class="col-4">
                     <button class="btn btn-primary mb-3">Bevestig</button>
                 </div>
                 </div>

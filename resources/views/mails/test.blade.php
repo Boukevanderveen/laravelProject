@@ -22,40 +22,38 @@
     </tr>
     </tbody>
 </table>
-<table>
-    <thead>
-        <tr>
-            <th>Aantal</th>
-            <th>Naam</th>
-            <th>Prijs excl.</th>
-            <th>Prijs incl.</th>
-            <th>Totaal incl.</th>
-        </tr>
+<h2>Producten</h2>
 
-    </thead>
-    <tbody>
-        @foreach ($order->orderdetails as $orderdetail)
+    <table style="width: 100%">
+        <thead>
             <tr>
-                <td data-th="Aantal">{{ $orderdetail->quantity }}</td>
-                <td data-th="Naam">{{ $orderdetail->product_name }}</td>
-                <td data-th="Prijs excl.">€ {{ str_replace('.', ',', number_format($orderdetail->product_price , 2))}}</td>
-                <td data-th="Prijs incl.">€ {{ str_replace('.', ',', number_format($orderdetail->product_price * $orderdetail->vat/100 , 2))}}</td>
-                <td data-th="Totaal incl.">€ {{ str_replace('.', ',', number_format($orderdetail->product_price * $orderdetail->quantity * $orderdetail->vat/100 + $orderdetail->product_price * $orderdetail->quantity, 2))}}</td>
+                <th style="text-align:left;">Hoeveelheid</th>
+                <th style="text-align:left;">Naam</th>
+                <th style="text-align:left;">BTW</th>
+                <th style="text-align:left;">Prijs</th>
+                <th style="text-align:left;">Totaal</th>
             </tr>
+        </thead>
+        @foreach ($order->orderdetails as $orderdetail)
+            <tbody>
+                <td>{{ $orderdetail->quantity }}</td>
+                <td>{{ $orderdetail->product_name }}</td>
+                <td>
+                    <p> {{$orderdetail->vat}}% </p>
+                </td>
+                <td>€ {{ number_format($orderdetail->product_price, 2, ',', '') }}</td>
+                @php $totaal_product = $orderdetail->product_price * $orderdetail->quantity; @endphp
+
+                <td>€ {{ number_format($totaal_product, 2, ',', '') }}</td>
+            </tbody>
         @endforeach
-    </tbody>
+    </table>
+
+    <div style="float: left">
+        <p><b>Subtotaal</b> € {{ number_format($order->total_excl, 2, ',', '') }}</p>
+        <p><b>BTW</b> € {{ number_format($order->vat, 2, ',', '') }}</p>
+        <p><b>Totaal €</b> {{ number_format($order->total_incl, 2, ',', '') }}</p>
+    </div>
 </table>
 
-<table>
-    <tbody>
-    <tr>
-        <td>Totaal excl. btw: €{{ str_replace('.', ',', number_format($order->total_excl, 2))}}</td>
-    </tr>
-    <tr>
-        <td>Totaal excl. btw: €{{ str_replace('.', ',', number_format($order->vat, 2))}}</td>
-    </tr>
-    <tr>
-        <td>Totaal excl. btw: €{{ str_replace('.', ',', number_format($order->total_incl, 2))}}</td>
-    </tr>
-    </tbody>
-</table>
+

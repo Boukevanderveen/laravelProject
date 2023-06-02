@@ -95,4 +95,15 @@ class StatusesController extends Controller
         $status->delete();
         return back()->with('message', 'Status succesvol verwijderd.');
     }
+
+    
+    public function searchIndex(Status $status, Request $request)
+    {
+        $this->authorize('view', $status);
+
+        $statuses = Status::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.statuses.index', ['statuses' => $statuses, 'search_term' => $request->search_term]);
+    }
 }

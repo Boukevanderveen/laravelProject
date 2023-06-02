@@ -100,6 +100,7 @@ class ProductsController extends Controller
 
     function update(UpdateProductRequest $request, Product $product)
     {
+        
         $product->name = $request->name;
         if ($request->hasFile('picture')) 
         {
@@ -139,6 +140,8 @@ class ProductsController extends Controller
 
     function destroy(Product $product)
     {
+        $this->authorize('delete', $product);
+
         if (OrderDetail::where('product_id', '=', $product->id)->exists()) {
             return back()->with('error', 'Product kon niet worden verwijderd. Dit product zit al in een bestelling.');
         }
@@ -176,7 +179,6 @@ class ProductsController extends Controller
                     "quantity" => $request->quantity,
                     "price" => $product->price,
                     "discount_price" => $product->discount_price,
-                    "picture" => $product->picture,
                     "picture" => $product->picture,
                     "vat" => $product->vat,
                     "stock" => $product->stock,
@@ -255,12 +257,14 @@ class ProductsController extends Controller
      *
      * @return response()
      */
-    public function searchIndex($search)
+    public function searchIndex(Product $product, Request $request)
     {
-        $products = Product::where('name', 'like', '%' . $search)
-        ->orWhere('description', 'like', '%' . $search . '%')->get();
+        $this->authorize('view', $product);
 
-        return view('products.index', ['products' => $products]);
+        $products = Product::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.products.index', ['products' => $products, 'search_term' => $request->search_term]);
     }
 }
 

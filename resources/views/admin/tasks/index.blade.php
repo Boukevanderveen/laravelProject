@@ -1,9 +1,20 @@
 @extends('layouts.admin')
 @section('content')
-
 <div class="row ">
-    <div class="col-10">
+    <div class="col-6">
         <h1> Taken </h1>
+    </div>
+    <div class="col-4 text-end">
+        <form action="{{ route('admin.tasks.search') }}">
+            <div class="input-group">
+                <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                <div class="input-group-append">
+                    <button class="btn" type="submit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="col-2 text-end">
         <a href="{{ route('admin.tasks.create') }}"><button class="btn btn-primary">Nieuwe taak</button></a>
@@ -14,6 +25,18 @@
     <div class="col-12 ">
         <table class="table">
             <thead>
+                <select class="form-select w-25 position-absolute top-0 end-0" onchange="location = this.value"
+                        name="user" id="user" aria-label="Default select example">
+                        <option value="/admin/tasks/completed">Afgeronde taken</option>
+                        <option value="/admin/tasks/uncompleted">Open taken</option>
+                        @if(isset($user))
+                        <option value="/admin/tasks/">Alle gebruikers</option>
+                        @endif
+                        <option value="/admin/tasks/" selected>@if(isset($user)){{$user->name}}@elseif(isset($filter)){{$filter}}@else Alle gebruikers @endif</option> 
+                        @foreach($users as $user)
+                        <option value="/admin/tasks/user/{{$user->id}}">{{$user->name}}</option>
+                        @endforeach
+                    </select>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Deadline</th>
@@ -37,10 +60,20 @@
                         <td>{{ $task->created_at->format('d-m-Y') }}</td>
                         <!--/*<td> $task->status->name </td>*/-->
                         <form method="post" action="{{ route('admin.tasks.destroy', $task) }}"> @csrf @method('delete')
-                            <td class="text-end"> <a href="{{ route('admin.tasks.complete', $task) }}"><button
-                                class="btn btn-link link-dark">
-                            <i class="fa fa-check"></i>
-                            </button></a>
+                            <td class="text-end"> 
+                                @if($task->completed == 0)
+                            
+                                    <a href="{{ route('admin.tasks.complete', $task) }}"><button
+                                        type="button" class="btn btn-link link-dark">
+                                    <i class="fa fa-check"></i>
+                                    </button></a>
+                                @endif
+                                @if($task->completed == 1)
+                                <a href="{{ route('admin.tasks.uncomplete', $task) }}"><button
+                                    type="button" class="btn btn-link link-dark">
+                                <i class="fa fa-close"></i>
+                                </button></a>
+                                @endif
                             <a href="{{ route('admin.tasks.edit', $task) }}"><button type="button" btn btn-link
                                 class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
                         <button type="submit" onclick="return confirm('Weet je zeker dat je {{ $task->name }} wilt verwijderen?')"
@@ -53,29 +86,4 @@
         {{ $tasks->links() }}
     </div>    
 </div>
-
-@if(!$tasks->isEmpty())
-<div class="modal fade modal-lg" id="confirmdeletionmodal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-  
-        <div class="modal-header">
-          <h4 class="modal-title">Artikel verwijderen</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-  
-        <div class="modal-body">
-            <div class="modal-body">
-                Weet u zeker dat u deze taak wilt verwijderen?
-               </div>
-        </div>
-  
-        <div class="modal-footer">
-            <form action="{{ route('admin.tasks.destroy', $task) }}" method="get">@csrf<button type="submit" class="btn btn-danger" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Toch verwijderen</button></form>
-        </div>
-  
-      </div>
-    </div>
-  </div>
-  @endif
 @endsection

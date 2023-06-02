@@ -1,15 +1,27 @@
 @extends('layouts.admin')
 @section('content')
-@include('includes.admin.projecttabs')
-
         <div class="row mt-2">
-            <div class="col-10">
+            <div class="col-6">
                 <h1> Leden </h1>
+            </div>
+            <div class="col-4 text-end">
+                <form action="{{ route('admin.projects.members.search', $project) }}">
+                    <div class="input-group">
+                        <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                        <div class="input-group-append">
+                            <button class="btn" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="col-2 text-end">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMemberModal" data-keyboard="true">Nieuw lid</button>
             </div>
         </div>
+        @include('includes.admin.projecttabs')
+
         <div class="row">
         <div class="col-12 card">
 
@@ -27,9 +39,13 @@
                         <tr>
                             <td>{{ $member->id }}</td>
                             <td>{{ $member->name }}</td>
-                            <td>{{ $member->pivot->role->name }}</td>
+                            @foreach($member->projects as $projectmember)
+                            @if($projectmember->id == $project->id)
+                            <td>{{ $projectmember->pivot->role->name  }}</td>
+                            @endif
+                            @endforeach
                                 <form method="post" action="{{ route('admin.projects.members.membersdestroy', [$project, $member]) }}"> @csrf @method('delete')
-                                    <td class="text-end"><a href="{{ route('admin.projects.members.membersedit', [$project, $member->id]) }}"><button type="button" btn btn-link
+                                    <td class="text-end"><a href="{{ route('admin.projects.members.membersedit', [$project, $member]) }}"><button type="button" btn btn-link
                                         class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
                                 <button type="submit" onclick="return confirm('Weet je zeker dat je {{ $member->name }} wilt verwijderen?')"
                                         class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>

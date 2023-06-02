@@ -22,6 +22,12 @@
         <ul class="navbar-nav mr-auto">
             <a class="nav-link" href="{{ route('products.index') }}">Producten</a>
         </ul>
+        <ul class="navbar-nav mr-auto">
+            <a class="nav-link" href="{{ route('orders.index') }}">Mijn bestellingen</a>
+        </ul>
+        <ul class="navbar-nav mr-auto">
+            <a class="nav-link" href="{{ route('adresses.index') }}">Mijn adressen</a>
+        </ul>
 
           <!-- Right Side Of Navbar -->
           <ul class="navbar-nav ms-auto">
@@ -52,17 +58,14 @@
                       <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                           {{ Auth::user()->name }}
                       </a>
-
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <form action="/logout" method="POST">
-                            <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">Uitloggen</a>
+                            <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">ee</a>
                             @csrf
                         </form>
                       </div>
                   </li>
               @endguest
-
-
           </ul>
       </div>
   </div>

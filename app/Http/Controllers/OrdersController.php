@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\OrderAdress;
 use Auth;
 use Session;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\StoreOrderAdressRequest;
+use App\Http\Requests\UpdateOrderAdressRequest;
+use App\Http\Requests\UpdateOrderRequest;
+use App\Models\Adress;
 use Mail;
 use App\Mail\MailableName;
 use App;
@@ -16,6 +20,21 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrdersController extends Controller
 {
+    function index(Order $order)
+    {
+        $orders = Order::where('user_id', Auth::user()->id)->latest()->paginate(6);
+
+        return view('orders.index', ['orders' => $orders]);
+    }
+
+    function show(Order $order)
+    {
+        $this->authorize('viewAny', $order);
+
+        return view('orders.show', ['order' => $order]);
+    }
+
+
     function adminIndex(Order $order)
     {
         $this->authorize('view', $order);
@@ -28,10 +47,12 @@ class OrdersController extends Controller
     function edit(Order $order)
     {
         $this->authorize('update', $order);
-        return view('admin.orders.edit', ['order' => $order]);
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        return view('admin.orders.edit', ['order' => $order, 'shipmentAdress'=> $shipmentAdress, 'invoiceAdress'=> $invoiceAdress]);   
     }
 
-    function update(Request $request, Order $order)
+    function update(UpdateOrderRequest $request, Order $order)
     {
         $order->name = $request->name;
         $order->zipcode = $request->zipcode;
@@ -50,35 +71,58 @@ class OrdersController extends Controller
         $this->authorize('delete', $order);
         $orderdetails = OrderDetail::where('order_id', $order->id);
         $orderdetails->delete();
+        $orderadresses = OrderAdress::where('order_id', $order->id)->delete();
+
         $order->delete();
 
         return back()->with('message', 'Bestelling succesvol verwijderd.');
     }
 
-    public function create(Request $request)
+    public function adressesDeliveryCreate(Request $request)
     {
-        $cart = session()->get('cart');
-
-        session()->put('cart', $cart);
-        return view('orders.create', ['total' => $request->total,'vattotal' => $request->vat, 'subtotal' => $request->subtotal]);
+        $adresses = Adress::where('user_id', Auth::user()->id)->get();
+        return view('orders.adresses.delivery.create', ['adresses' => $adresses]);
     }
 
-    public function store(StoreOrderRequest $request)
+    public function adressesInvoicesCreate(StoreOrderAdressRequest $request)
     {
+        return view('orders.adresses.invoices.create', ['shipmentAdressRequest' => $request->all()]);
+    }
+    
+    public function store(StoreOrderAdressRequest $request)
+    {   
         $Order = new Order;
-
         $Order->user()->associate(Auth::user()->id);
         $Order->email = $request->email;
-        $Order->name = $request->name;
-        $Order->street = $request->street;
-        $Order->house_number = $request->house_number;
-        $Order->addition = $request->addition;
-        $Order->zipcode = $request->zipcode;
-        $Order->city = $request->city;
         $Order->vat = $request->total_vat - $request->total;
         $Order->total_excl = $request->total;
         $Order->total_incl = $request->total_vat;
         $Order->save();
+
+        $OrderAdress = new OrderAdress;
+        $OrderAdress->type = $request->type;
+        $OrderAdress->name = $request->name;
+        $OrderAdress->company_name = $request->company_name;
+        $OrderAdress->street = $request->street;
+        $OrderAdress->phone_number = $request->phone_number;
+        $OrderAdress->house_number = $request->house_number;
+        $OrderAdress->addition = $request->addition;
+        $OrderAdress->zipcode = $request->zipcode;
+        $OrderAdress->city = $request->city;
+        $OrderAdress->email = $request->email;
+        $OrderAdress->order_id = $Order->id;
+        $OrderAdress->save();
+
+        $OrderAdress = new OrderAdress;
+        foreach (json_decode($request->shipmentAdressRequest) as $key => $value) {
+            
+            if($key !== "total_vat" && $key !== "total" && $key !== "updated_at" && $key !== "created_at" && $key !== "_token")
+            {
+                $OrderAdress->$key = $value;
+            }
+        }
+        $OrderAdress->order_id = $Order->id;
+        $OrderAdress->save();
 
         $cart = session()->get('cart', []);
 
@@ -133,6 +177,7 @@ class OrdersController extends Controller
             $OrderDetail->product()->associate($product['id']);
             $OrderDetail->quantity = $product['quantity'];
             $OrderDetail->product_name = $product['name'];
+            $OrderDetail->product_picture = $product['picture'];
             $OrderDetail->vat = $product['vat'];
             
             $OrderDetail->order_id = $Order->id;
@@ -145,10 +190,20 @@ class OrdersController extends Controller
         return redirect('products')->with('message', 'Bestelling succesvol afgerond'); 
     }
 
+    function createInvoice()
+    {
+        $cart = session()->get('cart');
+
+        session()->put('cart', $cart);
+        return view('orders.invoiceadress');
+    }
+
     function productsIndex(Order $order)
     {
         $products = Product::All();
-        return view('admin.orders.products.index', ['order' => $order, 'products' => $products]);
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        return view('admin.orders.products.index', ['order' => $order, 'products' => $products,'invoiceAdress' => $invoiceAdress,'shipmentAdress' => $shipmentAdress]);
     }
 
     function productsDestroy(Order $order, OrderDetail $orderdetail)
@@ -182,6 +237,8 @@ class OrdersController extends Controller
         $Orderdetail->vat = $product->vat;
         $Orderdetail->order_id = $order->id;
         $Orderdetail->product_id = $product->id;
+        $Orderdetail->product_picture = $product->picture;
+
         $product->stock -= $request->quantity;
 
         $product->update();
@@ -194,9 +251,103 @@ class OrdersController extends Controller
         return back()->with('message', 'Artikel succesvol toegevoegd');
     }
 
+    function productsEdit(Order $order, OrderDetail $orderdetail)
+    {
+        $this->authorize('update', $order);
+        $product = Product::find($orderdetail->product_id);
+        return view('admin.orders.products.edit', ['order' => $order, 'product' => $product, 'orderdetail' => $orderdetail]);
+    }
+
+    function productsUpdate(Request $request, Order $order, OrderDetail $orderdetail)
+    {
+        $this->authorize('update', $order);
+
+        $oldTotalExcl = $order->total_excl;
+        if($request->quantity < $orderdetail->quantity){        
+            $order->total_excl -= abs($orderdetail->quantity - $request->quantity) * $orderdetail->product_price;
+            $order->vat -= abs($order->total_excl - $oldTotalExcl) * $orderdetail->vat/100;
+            $order->total_incl = $order->total_excl + $order->vat;
+        }
+        if($request->quantity > $orderdetail->quantity){     
+            $order->total_excl += abs($orderdetail->quantity - $request->quantity) * $orderdetail->product_price;
+            $order->vat += abs($order->total_excl - $oldTotalExcl) * $orderdetail->vat/100;
+            $order->total_incl = $order->total_excl + $order->vat;
+        }
+        $orderdetail->quantity = $request->quantity;
+        $orderdetail->update();
+        $order->update();
+
+        return back()->with('message', 'Product succesvol bewerkt');
+    }
+
+    function invoiceAdressIndex(Order $order)
+    {
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        return view('admin.orders.invoiceadresses.index', ['order' => $order, 'invoiceAdress'=> $invoiceAdress]);
+    }
+
+    function invoiceAdressUpdate(Order $order, OrderAdress $invoiceadress, UpdateOrderAdressRequest $request)
+    {
+        $invoiceadress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        $invoiceadress->name = $request->name;
+        $invoiceadress->company_name = $request->company_name;
+        $invoiceadress->street = $request->street;
+        $invoiceadress->phone_number = $request->phone_number;
+        $invoiceadress->house_number = $request->house_number;
+        $invoiceadress->addition = $request->addition;
+        $invoiceadress->zipcode = $request->zipcode;
+        $invoiceadress->city = $request->city;
+        $invoiceadress->order_id = $order->id;
+        $invoiceadress->update();
+        return back()->with('message', 'Factuuradres succesvol bijgewerkt');
+    }
+
+    function shipmentAdressEdit(Order $order, OrderAdress $shipmentadress)
+    {
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        return view('admin.orders.shipmentadresses.edit', ['order' => $order, 'shipmentAdress'=> $shipmentAdress, 'invoiceAdress'=> $invoiceAdress]);
+    }
+    
+    function shipmentAdressUpdate(Order $order, OrderAdress $shipmentadress, UpdateOrderAdressRequest $request)
+    {
+        $shipmentadress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $shipmentadress->name = $request->name;
+        $shipmentadress->company_name = $request->company_name;
+        $shipmentadress->street = $request->street;
+        $shipmentadress->phone_number = $request->phone_number;
+        $shipmentadress->house_number = $request->house_number;
+        $shipmentadress->addition = $request->addition;
+        $shipmentadress->zipcode = $request->zipcode;
+        $shipmentadress->city = $request->city;
+        $shipmentadress->order_id = $order->id;
+        $shipmentadress->update();
+        return back()->with('message', 'Bezorgadres succesvol bijgewerkt');
+    }
+
+    function invoiceAdressEdit(Order $order, OrderAdress $shipmentadress)
+    {
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        return view('admin.orders.invoiceadresses.edit', ['order' => $order, 'invoiceAdress'=> $invoiceAdress, 'shipmentAdress'=> $shipmentAdress]);
+    }
+
+
     function invoice(Order $order)
     {
+        $this->authorize('view', $order);
+
         $pdf = Pdf::loadView('pdf.orders.invoice', ['order' => $order]);
         return $pdf->download('invoice.pdf');
+    }
+
+    function mail(Order $order)
+    {
+        $this->authorize('update', $order);
+
+        Mail::to($order->email)->send(new MailableName($order));
+        return back()->with('message', 'Bestelling bevestigingsmail succesvol herstuurd');
+
     }
 }

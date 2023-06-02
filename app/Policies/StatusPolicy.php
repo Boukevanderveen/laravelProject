@@ -30,7 +30,7 @@ class StatusPolicy
      */
     public function view(User $user, Status $status)
     {
-        //
+        return $user->isAdmin;
     }
 
     public function adminView(User $user)

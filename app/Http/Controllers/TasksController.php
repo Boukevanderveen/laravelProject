@@ -15,75 +15,31 @@ use Illuminate\Support\Facades\Auth;
 
 class TasksController extends Controller
 {
-    function index(Task $task)
-    {
-        $tasks = Task::latest()->paginate(6);
-        return view('tasks.index', ['tasks' => $tasks, 'task' => $task]);
-    }
-
-    function create(Task $task)
-    {
-        $this->authorize('create', $task);
-        $projects = Project::All();
-        $statuses = Status::All();
-
-        return view('tasks.create', ['statuses' => $statuses, 'projects' => $projects]);
-    }
-
-    function store(StoreTaskRequest $request, Task $task)
-    {
-        $this->authorize('create', $task);
-        $Tasks = new Task;
-        $Tasks->name = $request->name;
-        $Tasks->description = $request->description;
-        $Tasks->deadline = $request->deadline;
-        $Tasks->project_id = $request->project;
-        $Tasks->status_id = $request->status;
-        $Tasks->assigned_by_id = Auth::user()->id;
-        $Tasks->completed = 0;
-        $Tasks->save();
-        return redirect('tasks')->with('message', 'Taak succesvol gecreëerd');
-    }
-    
-    function edit(Task $task)
-    {
-        $this->authorize('update', $task);
-        $users = User::All();
-        $projects = Project::All();
-        $statuses = Status::All();
-        $project = Project::where('id', $task->project_id)->get();
-
-        return view('tasks.edit', ['task' => $task, 'member' => $task->member, 'users' => $users, 'statuses' => $statuses, 'projects' => $projects, 'project' => $project]);
-    }
-
-    function update(UpdateTaskRequest $request, Task $task)
-    {
-        $this->authorize('update', $task);
-        $task->name = $request->name;
-        $task->description = $request->description;
-        $task->deadline = $request->deadline;
-        $task->project_id = $request->project;
-        $task->member_id = $request->assigned_to;
-        $task->status_id = $request->status;
-        $task->assigned_by_id = Auth::user()->id;
-        $task->completed = $request->completed;
-        $task->update();
-        return back()->with('message', 'Taak succesvol bewerkt.');
-    }
-
-    function destroy(Request $request, Task $task)
-    {
-        $this->authorize('delete', $task);
-        $task->delete();
-        return back()->with('message', 'Taak succesvol verwijderd.');
-    }
-
     function adminIndex(Task $task)
     {
         $this->authorize('adminView', $task);
 
+        $users = User::latest()->get();
         $tasks = Task::latest()->paginate(6);
-        return view('admin.tasks.index', ['tasks' => $tasks]);
+        return view('admin.tasks.index', ['tasks' => $tasks, 'users' => $users]);
+    }
+
+    function indexCompleted(Task $task)
+    {
+        $this->authorize('view', $task);
+        $users = User::latest()->get();
+        $filter = "Sorteer op: voltooid";
+        $tasks = Task::where('completed', 1)->latest()->paginate(6);
+        return view('admin.tasks.index', ['tasks' => $tasks, 'task' => $task, 'filter' => $filter, 'users' => $users]);
+    }
+
+    function indexUncompleted(Task $task)
+    {
+        $this->authorize('view', $task);
+        $users = User::latest()->get();
+        $filter = "Sorteer op: open";
+        $tasks = Task::where('completed', 0)->latest()->paginate(6);
+        return view('admin.tasks.index', ['tasks' => $tasks, 'task' => $task, 'filter' => $filter, 'users' => $users]);
     }
 
     function adminCreate(Task $task)
@@ -158,7 +114,7 @@ class TasksController extends Controller
         $this->authorize('update', $task);
         $task->completed = 1;
         $task->update();
-        return back();
+        return back()->with('message', 'Taak succesvol afgerond.');
     }
 
     function uncomplete(Project $project, Task $task)
@@ -166,6 +122,19 @@ class TasksController extends Controller
         $this->authorize('update', $task);
         $task->completed = 0;
         $task->update();
-        return back();
+        return back()->with('message', 'Taak succesvol onvoltooid.');;
     }
+
+    public function searchIndex(Task $task, Request $request)
+    {
+        $this->authorize('view', $task);
+
+        $users = User::latest()->get();
+        $tasks = Task::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.tasks.index', ['tasks' => $tasks,'users' => $users, 'search_term' => $request->search_term]);
+    }
+
+    
 }

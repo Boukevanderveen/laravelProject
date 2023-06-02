@@ -207,4 +207,16 @@ class ArticlesController extends Controller
         $article->delete();
         return back()->with('message', 'Artikel succesvol verwijderd.');
     }
+
+    public function searchIndex(Article $article, Request $request)
+    {
+        $this->authorize('view', $article);
+
+        $categories = Category::all();
+        $articles = Article::where('title', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.articles.index', ['articles' => $articles, 'categories' => $categories, 'search_term' => $request->search_term]);
+    }
+
 }

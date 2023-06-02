@@ -25,7 +25,7 @@ class UpdateTaskRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'description' => 'required|max:95',
+            'description' => 'required|max:255',
             'deadline' => 'required',
             'project' => 'required',
             'member' => 'required',
@@ -46,7 +46,7 @@ class UpdateTaskRequest extends FormRequest
             'name.required' => 'De naam is verplicht',
             'name.max' => 'De naam mag niet langer zijn dan 25 letters',
             'description.required' => 'De beschrijving is verplicht',
-            'description.max' => 'De beschrijving mag niet langer zijn dan 95 letters',
+            'description.max' => 'De beschrijving mag niet langer zijn dan 255 letters',
             'deadline.required' => 'De deadline is verplicht',
             'project.required' => 'Het project is verplicht',
             'member.required' => 'De medewerker is verplicht',

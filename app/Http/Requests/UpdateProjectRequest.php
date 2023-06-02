@@ -24,8 +24,8 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3|unique:projects,name,' . $this->route('project')->id . ',id',
-            'description' => 'required|min:3', 
+            'name' => 'required|min:3|max:55|unique:projects,name,' . $this->route('project')->id . ',id',
+            'description' => 'required|min:3|max:255', 
         ];
     }
 
@@ -39,8 +39,10 @@ class UpdateProjectRequest extends FormRequest
         return [ 
             'name.required' => 'De naam is verplicht',
             'name.min' => 'De naam moet minimaal 3 letters bevatten',
+            'name.max' => 'De naam mag niet meer dan :max karakters bevatten',
             'description.required' => 'De beschrijving is verplicht',
             'description.min' => 'De beschrijving moet minimaal 3 letters bevatten',
+            'description.max' => 'De beschrijving mag niet meer dan :max karakters bevatten',
         ];
     }
 }

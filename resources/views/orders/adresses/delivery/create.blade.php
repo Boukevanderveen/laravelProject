@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col">
 
-            <h1>Bestelling afronden</h1>
+            <h1>Afleveradres</h1>
         </div>
     </div>
     @php 
@@ -21,8 +21,11 @@
     @endforeach
     <div class="row">
         <div class="col-9 card">
-            <form method="post" name="productform" action="{{ route('orders.store') }}">
 
+            <form method="post" name="productform" action="{{ route('orders.adresses.invoices.create') }}">
+            <input value="shipmentadress" type="hidden" name="type">
+            <input name="total" type="hidden" value="{{ $total }}">
+            <input name="total_vat" type="hidden" value="{{ $total_vat }}">
                 <div class="row mb-3 mt-5">
                     <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
                     <div class="col-md-5">
@@ -30,6 +33,17 @@
                             value="{{ old('name') }}" type="text" name="name" autofocus>
                         @if ($errors->has('name'))
                             <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="company_name" class="col-md-4 col-form-label text-md-end">Bedrijfsnaam:</label>
+                    <div class="col-md-5">
+                        <input class="form-control @error('company_name') is-invalid @enderror" id="company_name"
+                            value="{{ old('company_name') }}" type="text" name="company_name" autofocus>
+                        @if ($errors->has('company_name'))
+                            <div class="invalid-feedback">{{ $errors->first('company_name') }}</div>
                         @endif
                     </div>
                 </div>
@@ -89,6 +103,17 @@
                 </div>
 
                 <div class="row mb-3">
+                    <label for="phone_number" class="col-md-4 col-form-label text-md-end">Telefoon:</label>
+                    <div class="col-md-5">
+                        <input class="form-control @error('phone_number') is-invalid @enderror" value="{{ old('phone_number') }}"
+                            type="text" id="phone_number" name="phone_number" autofocus>
+                        @if ($errors->has('phone_number'))
+                            <div class="invalid-feedback">{{ $errors->first('phone_number') }}</div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="row mb-3">
                     <label for="email" class="col-md-4 col-form-label text-md-end">E-mail:</label>
                     <div class="col-md-5">
                         <input class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
@@ -100,15 +125,14 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-7"></div>
-                    <div class="col-5">
+                    <div class="col-4"></div>
+                    <div class="col-8">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#adressBookModal" class="btn mb-3">Kies adres uit adresboek</button>
                         <a href="{{ route('products.cart') }}"><button type="button" class="btn mb-3">Ga
                                 terug</button></a>
                         <button type="submit" class="btn btn-primary mb-3">Bevestig</button>
                     </div>
                 </div>
-                <input name="total" type="hidden" value="{{ $total }}">
-                <input name="total_vat" type="hidden" value="{{ $total_vat }}">
                 @csrf
             </form>
         </div>
@@ -130,3 +154,47 @@
         </div>
     </div>
 @endsection
+<div class="modal fade modal-lg" id="adressBookModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Adresboek</h4>
+          <button type="button" id="modal-close" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <div class="modal-body">
+                <div class="row mb-3 mt-3">
+                    <div class="col-md">
+                        
+                        @foreach($adresses as $adress)
+                        @php $array = json_encode($adress) @endphp
+                        <div 
+                                role="button" role="button"class="card mt-2" onclick="
+                                var target = {{$array}}
+                        for (let k in target){
+                            if (target.hasOwnProperty(k)) {
+                                var elementExists = document.getElementById(k);
+                                if (elementExists != null) {
+                                var s = document.getElementById(k);
+                                s.value = target[k];
+                                document.getElementById('modal-close').click();
+                                
+                            }
+                
+                            }
+                        }
+                                ">
+                                        <div class="m-2"> 
+                                            <h6>{{$adress->name}}</h6>
+                                            <h6>{{$adress->street}} {{$adress->house_number}}{{$adress->addition}}</h6>
+                                            <h6>{{$adress->zipcode}} {{$adress->city}}</h6>
+                                        </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,11 +1,22 @@
 @extends('layouts.admin')
 @section('content')
     <div class="row">
-        <div class="col-7">
+        <div class="col-6">
             <h1>Producten</h1>
         </div>
-        <div class="col-5 text-end">
-            <input type="text" placeholder="Zoeken..">
+        <div class="col-4 text-end">
+            <form action="{{ route('admin.products.search') }}">
+                <div class="input-group">
+                    <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                    <div class="input-group-append">
+                        <button class="btn" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-2 text-end">
             <a href="{{ route('admin.products.create') }}"><button class="btn btn-primary">Nieuw product</button></a>
         </div>
     </div>

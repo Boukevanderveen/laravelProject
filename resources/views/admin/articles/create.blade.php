@@ -60,7 +60,7 @@
             <div class="row mb-3">
                 <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                 <div class="col-md-5">
-                    <textarea rows="3" class="form-control @error('description') is-invalid @enderror" name="description"   autofocus>{{old('description')}}</textarea>
+                    <textarea rows="3" class="form-control @error('description') is-invalid @enderror" id="description" name="description"   autofocus>{{old('description')}}</textarea>
                     @if ($errors->has('description'))
                     <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                     @endif
@@ -68,10 +68,9 @@
             </div>
             
             <div class="row mb-3">
-
-                <label for="editor3" class="col-md-4 col-form-label text-md-end">Content:</label>
-                <div rows="10" cols="50" class="col-md-5">
-                    <textarea id="editor3" type="text" class="form-control @error('content') is-invalid @enderror" name="content" autofocus>{{ old('content') }}</textarea>
+                <label for="content" class="col-md-4 col-form-label text-md-end">Content:</label>
+                <div class="col-md-5">
+                    <textarea id="editor5" type="text" class="form-control @error('content') is-invalid @enderror" name="content"   autofocus>{{old('content')}}</textarea>
                     @if ($errors->has('content'))
                     <div class="invalid-feedback">{{ $errors->first('content') }}</div>
                     @endif

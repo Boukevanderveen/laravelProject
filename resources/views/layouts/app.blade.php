@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     
-    
-    <script src="js/script.js"></script>
+    <script type="text/javascript" src="{{ URL::asset('js/script.js') }}"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
     <script type="text/javascript" src="js/bootstrap/bootstrap-dropdown.js"></script>
 

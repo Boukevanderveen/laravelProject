@@ -5,13 +5,6 @@
             <h1>Bewerk product categorie</h1>
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-        $('.js-example-basic-multiple').select2();
-        $(".js-example-basic-multiple").select2({ width: '100%' });      
-
-    });
-    </script>
     <div class="row">
         <div class="col-12 card">
             <form method="post" name="productform" action="{{ route('admin.productcategories.update', $category ) }}">

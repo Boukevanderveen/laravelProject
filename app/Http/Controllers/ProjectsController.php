@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Task;
 use App\Models\Status;
+use App\Models\ProjectUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Auth;
@@ -31,207 +32,6 @@ class ProjectsController extends Controller
     {
         return view('projects.show', ['project' => $project]);
     } 
-    function create(Project $project)
-    {
-        $this->authorize('create', $project);
-        return view('projects.create');
-    }
-
-    function store(StoreProjectRequest $request, Project $project)
-    {
-        $this->authorize('create', $project);
-        $Projects = new Project;
-        $Projects->name = $request->name;
-        $Projects->description = $request->description;
-        $Projects->creator = Auth::user()->name;
-        $Projects->save();
-        return redirect('projects')->with('message', 'Project succesvol gecreëerd');
-    }
-    
-    function edit(Project $project)
-    {
-        $this->authorize('update', $project);
-        $users = User::All();
-        $roles = Role::latest();
-        $usersProject = User::select()->whereNotIn('id', DB::table('project_user')->pluck('user_id'))->get();
-        $openTasks = Task::select()->where('completed', 0)->get();
-        $closedTasks = Task::select()->where('completed', 1)->get();
-        $users = User::All();
-        $projects = Project::All();
-        $statuses = Status::All();
-
-        return view('projects.edit', ['project' => $project, 'members' => $project->users, 'roles' => $roles, 'usersProject' => $usersProject, 'openTasks' => $openTasks, 'closedTasks' => $closedTasks, 'users' => $users, 'statuses' => $statuses, 'projects' => $projects]);
-    }
-
-    function update(UpdateProjectRequest $request, Project $project)
-    {
-        $this->authorize('update', $project);
-        $query = Project::where('id', $request->id)->update(['name' => $request->name, 'description' => $request->description]);
-        if($query)
-        {
-            return redirect('projects')->with('message', 'Project succesvol bewerkt.');
-        }
-        else
-        {
-            return redirect('projects')->with('error', 'Er is een fout opgetreden met het bewerken van het project.');
-        }
-    }
-
-    function destroy(Request $request, Project $project)
-    {
-        $this->authorize('delete', $project);
-        $project->delete();
-        return back()->with('message', 'Project succesvol verwijderd.');
-    }
-
-    function rolesIndex(Project $project)
-    {
-        $this->authorize('update', $project);
-        $roles = Role::latest()->paginate(6);
-        return view('roles.index', ['roles' => $roles]);
-    }
-
-    function membersIndex($id, Project $project)
-    {
-        $this->authorize('update', $project);
-        $project = Project::find($id);
-        $roles = Role::All();
-        return view('projects.members.index', ['members' => $project->users, 'project' => $project, 'roles' => $roles]);
-    }
-
-    function membersEdit($id, Project $project)
-    {
-        $this->authorize('update', $project);
-        $project = Project::find($id);
-        $roles = Role::All();
-        return view('projects.members.edit', ['member' => $member, 'project' => $project, 'roles' => $roles]);
-    }
-
-    function membersStore(Request $request, Project $project)
-    {
-        $this->authorize('create', $project);
-        $user = User::where('name', $request->name)->first();
-        $project->users()->attach($user->id);
-        $project->roles()->attach($request->role);
-        $user = User::find(1);
-        return back()->with('message', 'Lid succesvol toegevoegd');
-    }
-
-    function membersUpdate(Request $request, Project $project)
-    {
-        $this->authorize('update', $project);
-        $user = User::where('id', $member->id)->first();
-        $project->users()->updateExistingPivot($user->id, [
-            'role' => $request->role,
-        ]);
-        return back()->with('message', 'Lid rol succesvol bewerkt');
-    }
-
-    function rolesMembersDelete($memberid, $projectid, Project $project)
-    {
-        $this->authorize('delete', $project);
-        $project = Project::find($projectid);
-        $project->users()->detach($memberid);
-        return back()->with('message', 'Lid succesvol verwijderd');
-    }
-
-    function tasksStore(StoreTaskRequest $request, Task $task)
-    {
-        $project = Project::where('name','LIKE','%'.$request->project.'%')->first();
-        $member = User::where('name','LIKE','%'.$request->member.'%')->first();
-        $status = Status::where('name','LIKE','%'.$request->status.'%')->first();
-
-        $this->authorize('create', $task);
-        $Tasks = new Task;
-        $Tasks->name = $request->name;
-        $Tasks->description = $request->description;
-        $Tasks->deadline = $request->deadline;
-        $Tasks->project_id = $project->id;
-        $Tasks->member_id = $member->id;
-        $Tasks->status_id = $status->id;
-        $Tasks->assigned_by_id = Auth::user()->id;
-        $Tasks->completed = 0;
-        $Tasks->save();
-        return back()->with('message', 'Taak succesvol gecreëerd');
-    }
-    
-    function tasksEdit(Project $project,Task $task)
-    {
-        $this->authorize('update', $task);
-        $users = User::All();
-        $projects = Project::All();
-        $statuses = Status::All();
-
-        return view('projects.tasks.edit', ['task' => $task, 'member' => $task->member, 'users' => $users, 'statuses' => $statuses, 'projects' => $projects, 'project' => $project]);
-    }
-
-    function tasksUpdate(UpdateTaskRequest $request, Project $project, Task $task)
-    {
-        $this->authorize('update', $task);
-        $task->name = $request->name;
-        $task->description = $request->description;
-        $task->deadline = $request->deadline;
-        $task->project_id = $request->project;
-        $task->member_id = $request->assigned_to;
-        $task->status_id = $request->status;
-        $task->assigned_by_id = Auth::user()->id;
-        $task->completed = $request->is_open;
-        $task->update();
-        return back()->with('message', 'Taak succesvol bewerkt.');
-    }
-
-    function tasksDestroy(Project $project,Task $task)
-    {
-        $this->authorize('delete', $task);
-        $task->delete();
-        return back()->with('message', 'Taak succesvol verwijderd.');
-    }
-
-    function tasksComplete(Project $project, Task $task)
-    {
-        $this->authorize('update', $task);
-        $task->completed = 1;
-        $task->update();
-        return back();
-    }
-
-    function tasksUncomplete(Project $project, Task $task)
-    {
-        $this->authorize('update', $task);
-        $task->completed = 0;
-        $task->update();
-        return back();
-    }
-
-    function tasksSortStatus(Project $project, Status $status, Task $task)
-    {
-        $users = User::All();
-        $roles = Role::latest();
-        $usersProject = User::select()->whereNotIn('id', DB::table('project_user')->pluck('user_id'))->get();
-        $openTasks = Task::select()->where('completed', 0)->where( 'status_id', $status->id)->get();
-        $closedTasks = Task::select()->where('completed', 1)->where( 'status_id', $status->id)->get();
-        $users = User::All();
-        $projects = Project::All();
-        $statuses = Status::All();
-        
-        return view('projects.edit', ['project' => $project, 'members' => $project->users, 'roles' => $roles, 'usersProject' => $usersProject, 'openTasks' => $openTasks, 'closedTasks' => $closedTasks, 'users' => $users, 'statuses' => $statuses, 'projects' => $projects, 'task' => $task]);
-
-    }
-
-    function tasksSortMember(Project $project, User $member, Task $task)
-    {
-        $users = User::All();
-        $roles = Role::latest();
-        $usersProject = User::select()->whereNotIn('id', DB::table('project_user')->pluck('user_id'))->get();
-        $openTasks = Task::select()->where('completed', 0)->where( 'member_id', $member->id)->get();
-        $closedTasks = Task::select()->where('completed', 1)->where( 'member_id', $member->id)->get();
-        $users = User::All();
-        $projects = Project::All();
-        $statuses = Status::All();
-        
-        return view('projects.edit', ['project' => $project, 'members' => $project->users, 'roles' => $roles, 'usersProject' => $usersProject, 'openTasks' => $openTasks, 'closedTasks' => $closedTasks, 'users' => $users, 'statuses' => $statuses, 'projects' => $projects, 'task' => $task]);
-
-    }
 
     function adminIndex(Project $project)
     {
@@ -278,7 +78,10 @@ class ProjectsController extends Controller
         $this->authorize('update', $project);
         $users = User::All();
         $roles = Role::latest()->paginate(6);
-        $usersProject = User::select()->whereNotIn('id', DB::table('Project_User')->pluck('user_id'))->get();
+        
+        $userproject = ProjectUser::where('project_id', $project->id)->get();
+
+        $usersProject = User::select()->whereNotIn('id', $userproject->pluck('user_id'))->get();
 
         $users = User::All();
         $statuses = Status::All();
@@ -307,15 +110,15 @@ class ProjectsController extends Controller
     function adminRolesEdit(Project $project, Role $role)
     {
         $this->authorize('update', $role);
-        return view('admin.projects.roles.edit', ['role' => $role]);
+        return view('admin.projects.roles.edit', ['role' => $role, 'project' => $project]);
     }
 
-    function adminRolesUpdate(UpdateRoleRequest $request, Role $role)
+    function adminRolesUpdate(UpdateRoleRequest $request, Project $project, Role $role)
     {
         $this->authorize('update', $role);
         $role->name = $request->name;
-        $role->save();
-        return redirect('roles')->with('message', 'Rol succesvol bewerkt.');
+        $role->update();
+        return back()->with('message', 'Rol succesvol bewerkt.');
     }
 
     function adminRolesDestroy(Project $project, Role $role)
@@ -383,11 +186,11 @@ class ProjectsController extends Controller
         return back()->with('message', 'Lid succesvol toegevoegd');
     }
 
-    function adminMembersEdit(Project $project, $user)
+    function adminMembersEdit(Project $project, User $member)
     {
         $this->authorize('update', $project);
         $roles = Role::All();
-        return view('admin.projects.members.edit', ['member' => $user, 'project' => $project, 'roles' => $roles]);
+        return view('admin.projects.members.edit', ['member' => $member, 'project' => $project, 'roles' => $roles]);
     }
 
     function adminMembersUpdate(Request $request, Project $project)
@@ -540,6 +343,24 @@ class ProjectsController extends Controller
         return view('admin.projects.tasks.closedtasks', ['member' => $member, 'project' => $project, 'members' => $project->users, 'roles' => $roles, 'usersProject' => $usersProject, 'closedTasks' => $closedTasks, 'users' => $users, 'statuses' => $statuses, 'task' => $task]);
 
     }
+
+    public function searchIndex(Project $project, Request $request)
+    {
+        $this->authorize('view', $project);
+        $usersProject = User::select()->whereNotIn('id', DB::table('Project_User')->pluck('user_id'))->get();
+
+
+        // 'projects' is functie in model User
+        $statuses = Status::All();
+        $roles = Role::All();
+        $users = User::where('name', 'like', '%' . $request->search_term.'%')->whereRelation('projects', 'project_id', $project->id)->get();
+        //$projects = Project::all();
+        //$projects = Project::with('users')->whereRelation('users', 'name', 'like', '%' . $request->search_term)->latest()->
+                                            //paginate();
+
+        return view('admin.projects.members.index', ['members' => $users, 'project' => $project, 'search_term' => $request->search_term, 'usersProject' => $usersProject, 'statuses' => $statuses, 'roles' => $roles]);
+    }
+
 }
 
 

@@ -1,13 +1,6 @@
 @extends('layouts.admin')
 @section('content')
     @yield('scripts')
-    <script>
-        $(document).ready(function() {
-        $('.js-example-basic-multiple').select2();
-        $(".js-example-basic-multiple").select2({ width: '100%' });      
-
-    });
-    </script>
     <div class="row">
         <div class="col-12">
 
@@ -33,7 +26,6 @@
                     <label for="categories[]" class="col-md-4 col-form-label text-md-end">Categorieën:</label>
                     <div class="col-md-5">
                         <select class="js-example-basic-multiple" id="categories[]" name="categories[]" multiple="multiple">
-
                             @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach

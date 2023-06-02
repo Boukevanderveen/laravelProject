@@ -65,4 +65,14 @@ class RolesController extends Controller
             return back()->with('error', 'Rol kon niet worden verwijderd. Controleer of een gebruiker deze rol nog gebruikt.');
           }
     }
+
+    public function searchIndex(Role $role, Request $request)
+    {
+        $this->authorize('view', $role);
+
+        $roles = Role::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.roles.index', ['roles' => $roles, 'search_term' => $request->search_term]);
+    }
 }

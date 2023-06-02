@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-@include('includes.admin.projecttabs')
 <div class="row mt-2">
     <div class="col-10">
         <h1> Open taken </h1>
@@ -9,7 +8,7 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal" data-keyboard="true">Nieuwe taak</button>
     </div>
 </div>
-
+@include('includes.admin.projecttabs')
 <div class="row">
     <div class="col-12 card">
         <table class="table">

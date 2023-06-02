@@ -9,7 +9,7 @@
 
 @foreach($projects as $project)
     
-    <div class="col-4">
+    <div class="col-4 mt-3">
     <div class="card d-flex align-items-start">
         <div class="card-body">
             <h5 class="card-title">{{$project->name}}</h5>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->string('product_name');
             $table->double('product_price');
+            $table->string('product_picture');
             $table->decimal('vat');
             $table->timestamps();
             $table->unsignedBigInteger('order_id')->nullable();

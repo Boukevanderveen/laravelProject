@@ -30,14 +30,15 @@
                             <td>{{ date('d-m-Y H:i:s', strtotime($order->created_at)) }}</td>
                             
                             </td>
+                            <td class="text-end">
+
                                 <form method="post" action="{{ route('admin.orders.destroy', $order) }}"> @csrf @method('delete')
-                                    <td class="text-end">
                                         <a href="{{ route('admin.orders.invoice', $order) }}"><button type="button" btn btn-link
                                             class="btn btn-link link-dark text-end"><i class='fa fa-download'></i></button></a>
                                         <a href="{{ route('admin.orders.edit', $order) }}"><button type="button" btn btn-link
                                         class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
                                 <button type="submit" onclick="return confirm('Weet je zeker dat je bestelling #{{ $order->id }} van {{ $order->email }} wilt verwijderen?')"
-                                        class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>
+                                        class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></form></td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -5,6 +5,9 @@
     <a class="text-decoration-none" href="{{ route('admin.orders.index') }}">
         <li class="list-group-item">Bestellingen</li>
     </a>
+    <a class="text-decoration-none" href="{{ route('admin.adresses.index') }}">
+        <li class="list-group-item">Adressen</li>
+    </a>
     <a class="text-decoration-none" href="{{ route('admin.products.index') }}">
         <li class="list-group-item">Producten</li>
     </a>

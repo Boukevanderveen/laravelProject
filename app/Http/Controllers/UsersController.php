@@ -19,7 +19,7 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
         $users = User::latest()->paginate(6);
-        return view('users.index', ['users' => $users, 'user' => $users]);
+        return view('users.index', ['users' => $users]);
     }
 
     function create()
@@ -115,5 +115,15 @@ class UsersController extends Controller
         $this->authorize('delete', $user);
         $user->delete();
         return back()->with('message', 'Gebruiker succesvol verwijderd.');
+    }
+
+    public function searchIndex(User $user, Request $request)
+    {
+        $this->authorize('view', $user);
+
+        $users = User::where('name', 'like', '%' . $request->search_term.'%')
+        ->latest()->paginate(6);
+
+        return view('admin.users.index', ['users' => $users, 'search_term' => $request->search_term]);
     }
 }

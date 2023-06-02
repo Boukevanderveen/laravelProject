@@ -24,7 +24,7 @@ class StoreRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:2|unique:roles',
+            'name' => 'required|min:2|max:55|unique:roles',
         ];
     }
 
@@ -38,6 +38,7 @@ class StoreRoleRequest extends FormRequest
         return [
             'name.required' => 'De naam is verplicht',
             'name.min' => 'De naam moet minimaal 2 letters zijn',
+            'name.max' => 'De naam mag niet meer dan :max karakters bevatten',
             'name.unique' => 'Er bestaat al een rol met deze naam',
         ];
     }

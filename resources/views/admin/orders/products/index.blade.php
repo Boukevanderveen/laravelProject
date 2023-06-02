@@ -10,11 +10,17 @@
     </div>
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{{ route('admin.orders.edit', [$order]) }}">Bewerk gegevens</a>
+            <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"  aria-current="page" href="{{ route('admin.orders.edit', $order) }}">Bewerk gegevens</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ route('admin.orders.products.index', [$order]) }}">Bewerk artikelen</a>
+            <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"   aria-current="page" href="{{ route('admin.orders.shipmentadresses.edit', [$order, $shipmentAdress]) }}">Bezorgadres</a>
+        <li class="nav-item">
+            <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"   aria-current="page" href="{{ route('admin.orders.invoiceadresses.edit', [$order, $invoiceAdress]) }}">Factuuradres</a>
         </li>
+        <li class="nav-item">
+            <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"   aria-current="page" href="{{ route('admin.orders.products.index', $order) }}">Producten</a>
+        </li>
+    
     </ul>
     <div class="row">
         <div class="col-12 card">
@@ -37,6 +43,8 @@
                             <td>€ {{ str_replace('.', ',', number_format($orderdetail->product_price * $orderdetail->quantity, 2))}}</td>
                             <form method="post" action="{{ route('admin.orders.products.destroy', [$order, $orderdetail]) }}"> @csrf @method('delete')
                                 <td class="text-end">
+                                    <a href="{{ route('admin.orders.products.edit', [$order, $orderdetail]) }}"><button type="button" btn btn-link
+                                        class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>
                             <button type="submit" onclick="return confirm('Weet je zeker dat je het artikel {{ $orderdetail->product_name }} van deze bestelling wilt verwijderen?')"
                                     class="btn btn-link link-dark"><i class="fa fa-trash-o"></i></button></td></form>
                         </tr>

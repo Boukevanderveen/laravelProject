@@ -24,7 +24,7 @@ class UpdateStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:25|unique:statuses,name,' . $this->route('status')->id . ',id',
+            'name' => 'required|max:55|unique:statuses,name,' . $this->route('status')->id . ',id',
 
         ];
     }
@@ -39,7 +39,7 @@ class UpdateStatusRequest extends FormRequest
         return [
             
             'name.required' => 'De naam is verplicht',
-            'name.max' => 'De naam mag niet langer zijn dan 25 letters',
+            'name.max' => 'De naam mag niet langer zijn dan :max letters',
 
         ];
     }

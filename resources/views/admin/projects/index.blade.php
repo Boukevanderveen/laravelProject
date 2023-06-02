@@ -2,8 +2,20 @@
 @section('content')
 
 <div class="row">
-    <div class="col-10">
+    <div class="col-6">
         <h1> Projecten </h1>
+    </div>
+    <div class="col-4 text-end">
+        <form action="{{ route('admin.projects.search') }}">
+            <div class="input-group">
+                <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                <div class="input-group-append">
+                    <button class="btn" type="submit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="col-2 text-end">
         <a href="{{ route('admin.projects.create') }}"><button class="btn btn-primary">Nieuw project</button></a>

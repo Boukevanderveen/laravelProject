@@ -37,15 +37,10 @@
                       </a>
 
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        @if(Auth::user()->isAdmin)
-                          <a class="dropdown-item" href="{{ route('logout') }}">Uitloggen</a>
-                        @else
-                        <a class="dropdown-item" href="/logout">Uitloggen</a>
-                        @endif
-                        
-
-                              @csrf
-                          </form>
+                        <form action="/logout" method="POST">
+                            <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">uitloggen</a>
+                            @csrf
+                        </form>
                       </div>
                   </li>
               @endguest
