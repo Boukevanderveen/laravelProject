@@ -7,7 +7,7 @@
     <div class="col-4 text-end">
         <form action="{{ route('admin.tasks.search') }}">
             <div class="input-group">
-                <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken op naam" name="search_term" id="search_term">
                 <div class="input-group-append">
                     <button class="btn" type="submit">
                         <i class="fa fa-search"></i>
@@ -41,7 +41,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Deadline</th>
                     <th scope="col">Project</th>
-                    <th scope="col">Taak</th>
+                    <th scope="col">Naam</th>
                     <th scope="col">Medewerker</th>
                     <th scope="col">Status</th>
                     <th scope="col">Gemaakt op</th>

@@ -2,7 +2,6 @@
 @section('content')
     <div class="row">
         <div class="col">
-
             <h1>Afleveradres</h1>
         </div>
     </div>
@@ -20,9 +19,9 @@
         @endif
     @endforeach
     <div class="row">
-        <div class="col-9 card">
+        <div class="col-8 card">
 
-            <form method="post" name="productform" action="{{ route('orders.adresses.invoices.create') }}">
+            <form method="post" name="productform" action="{{ route('orders.adresses.delivery.store') }}">
             <input value="shipmentadress" type="hidden" name="type">
             <input name="total" type="hidden" value="{{ $total }}">
             <input name="total_vat" type="hidden" value="{{ $total_vat }}">
@@ -136,33 +135,96 @@
                 @csrf
             </form>
         </div>
-        <div class="col-3">
-            <ul class="list-group border">
-                <li class="list-group-item border-0">
-                    <h5>Samenvatting:</h5>
-                </li>
-                <li class="list-group-item border-0">Subtotaal: €
-                    {{ str_replace('.', ',', number_format((float) $total, 2, '.', '')) }}</li>
-                <li class="list-group-item border-0">Btw: €
-                    {{ str_replace('.', ',', number_format((float) $total_vat - $total, 2, '.', '')) }}</li>
-                <li class="list-group-item border-0"></li>
-                <li class="list-group-item border-0">Totaal excl. btw: €
-                    {{ str_replace('.', ',', number_format((float) $total, 2, '.', '')) }}</li>
-                <li class="list-group-item border-0">Totaal incl. btw: €
-                    {{ str_replace('.', ',', number_format((float) $total_vat, 2, '.', '')) }}</li>
+        <div class="col-4">
+        <div class="row m-1">
+            <h5>Samenvatting:</h5>
+            <ul class="list-group card">
+                <div class="row">
+                    <div class="col-8">
+                        <li class="list-group-item border-0">Subtotaal:</li>
+                        <li class="list-group-item border-0">Btw:</li>
+                        <li class="list-group-item border-0">Totaal excl. btw:</li>
+                        <li class="list-group-item border-0">Totaal incl. btw:</li>
+                    </div>
+                    <div class="col-4 text-end">
+                        <li class="list-group-item border-0">€ {{ str_replace('.', ',', number_format((float)$total, 2, '.', '')) }}</li>
+                        <li class="list-group-item border-0">€ {{ str_replace('.', ',', number_format((float)$total_vat - $total, 2, '.', '')) }}</li>
+                        <li class="list-group-item border-0">€ {{ str_replace('.', ',', number_format((float)$total, 2, '.', '')) }}</li>
+                        <li class="list-group-item border-0">€ {{ str_replace('.', ',', number_format((float)$total_vat, 2, '.', '')) }}</li>
+                    </div>
+                </div>
             </ul>
         </div>
+        <div class="row m-1">
+            <h5>Winkelmandje:</h5>
+            <div class="card">
+            <table id="cart" class="table table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th>Artikel</th>
+                        <th>Aantal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                    @php 
+                    $total = 0;
+                    $total_vat = 0;
+                    @endphp
+                    <tbody>
+                        @foreach(session('cart') as $id => $details)
+                            @if(isset($details['discount_price']))
+                            @php $total += $details['discount_price'] * $details['quantity'];
+                            $total_vat += $details['discount_price'] * $details['quantity'] * $details['vat']/100 + ($details['discount_price'] * $details['quantity']) @endphp
+                            @else
+                            @php $total += $details['price'] * $details['quantity'];
+                            $total_vat +=  $details['price'] * $details['quantity'] * $details['vat']/100 + ($details['price'] * $details['quantity']) @endphp
+                            @endif
+                            <tr data-id="{{ $id }}">
+                                <td >
+                                    <div class="row">
+                                        @if($details['picture']) 
+                                        <div class="col-sm-5 hidden-xs"><img src="{{ asset('images/products/'.$details['id'].'/'.$details['picture'].'') }}" width="80" height="80" class="img-fluid"/></div>
+                                        @else
+                                        <div class="col-sm-5 hidden-xs"><img src="{{ asset('images/default-image.png') }}" width="80" height="80" class="img-fluid"/></div>
+                                        @endif
+                                        <div class="col-sm-7">
+                                            <h5 class="nomargin">{{ $details['name'] }}</h5>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{str_replace('.', ',', $details['quantity']) }}</td>
+    
+                                @if(isset($details['discount_price']))
+            
+                                @else
+                                @endif
+                                <td class="actions" data-th="">
+                                </td>
+                            </tr>
+                        @endforeach   
+                </tbody>
+            </table>
+        </div>
+        </div>
+        </div>
+    </div>
     </div>
 @endsection
 <div class="modal fade modal-lg" id="adressBookModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
   
-        <div class="modal-header">
-          <h4 class="modal-title">Adresboek</h4>
-          <button type="button" id="modal-close" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="row">
+        <div class="col-8">
+          <h4 class="modal-title m-2">Adresboek</h4>
         </div>
-  
+        <div class="col-4 text-end">
+            <a href="{{ route('adresses.create') }}"><button class="btn btn-primary m-1">Nieuw adres</button></a>
+            <button type="button" id="modal-close" class="btn-close m-2" data-bs-dismiss="modal"></button>          
+        </div>
+          
+        </div>
+<div class="row">   
         <div class="modal-body">
                 <div class="row mb-3 mt-3">
                     <div class="col-md">
@@ -197,4 +259,5 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
+</div>

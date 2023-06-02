@@ -14,6 +14,8 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductCategoriesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\AdressesController;
+use App\Http\Controllers\TypesController;
+use App\Http\Controllers\AttributesController;
 use Dompdf\Dompdf;
 
 use Illuminate\Support\Facades\DB;
@@ -52,11 +54,11 @@ use Illuminate\Support\Facades\Auth;
             Route::group([ 'prefix' => 'delivery', 'as' => 'delivery.'], function ()
             {
             Route::get('create', [OrdersController::class, 'adressesDeliveryCreate'])->name('create');
-            Route::post('store', [OrdersController::class, 'adressesDeliveryStore'])->name('store');
+            Route::post('store', [OrdersController::class, 'adressesInvoicesStore'])->name('store');
             });
             Route::group([ 'prefix' => 'invoices', 'as' => 'invoices.'], function ()
             {
-            Route::post('create', [OrdersController::class, 'adressesInvoicesCreate'])->name('create');
+            Route::get('create', [OrdersController::class, 'adressesInvoicesCreate'])->name('create');
             Route::post('store', [OrdersController::class, 'adressesInvoicesStore'])->name('store');
             });
 
@@ -65,7 +67,18 @@ use Illuminate\Support\Facades\Auth;
 
     Route::group([ 'prefix' => 'products', 'as' => 'products.'], function ()
     {
-        Route::get('', [ProductsController::class, 'index'])->name('index');
+        Route::post('indexcategories', [ProductsController::class, 'indexCategories'])->name('indexcategories');
+        Route::post('indexprice', [ProductsController::class, 'indexPrice'])->name('indexprice');
+        Route::post('indexattributes', [ProductsController::class, 'indexAttributes'])->name('indexattributes');
+        
+        Route::group([ 'prefix' => 'categories', 'as' => 'categories.'], function ()
+        {
+        Route::group([ 'prefix' => '{category}'], function ()
+        {
+            Route::get('', [ProductsController::class, 'index'])->name('index');
+            Route::get('indexcategory', [ProductsController::class, 'indexCategory'])->name('indexcategory');
+        });
+        });
 
         Route::group([ 'prefix' => '{product}'], function ()
         {
@@ -256,6 +269,12 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middlware' => ['auth']], 
 
                 Route::group([ 'prefix' => '{product}'], function ()
                 {
+                    
+                    Route::group([ 'prefix' => 'attributes', 'as' => 'attributes.'], function ()
+                    {
+                    Route::get('edit', [ProductsController::class, 'attributesEdit'])->name('edit');
+                    Route::post('update', [ProductsController::class, 'attributesUpdate'])->name('update');
+                    });
                     Route::post('update', [ProductsController ::class, 'update'])->name('update');
                     Route::get('edit', [ProductsController::class, 'edit'])->name('edit');
                     Route::delete('destroy', [ProductsController::class, 'destroy'])->name('destroy');
@@ -276,6 +295,38 @@ Route::group([ 'prefix' => 'admin', 'as' => 'admin.', 'middlware' => ['auth']], 
                 Route::post('update', [ProductCategoriesController ::class, 'update'])->name('update');
                 Route::get('edit', [ProductCategoriesController::class, 'edit'])->name('edit');
                 Route::delete('destroy', [ProductCategoriesController::class, 'destroy'])->name('destroy');
+            });
+        });
+
+        Route::group([ 'prefix' => 'types', 'as' => 'types.' ], function ()
+        {
+            Route::get('', [TypesController::class, 'index'])->name('index');
+            Route::get('create', [TypesController ::class, 'create'])->name('create');
+            Route::post('store', [TypesController ::class, 'store'])->name('store');
+                    
+            Route::get('search', [TypesController::class, 'searchIndex'])->name('search');
+
+            Route::group([ 'prefix' => '{type}'], function ()
+            {
+                Route::post('update', [TypesController ::class, 'update'])->name('update');
+                Route::get('edit', [TypesController::class, 'edit'])->name('edit');
+                Route::delete('destroy', [TypesController::class, 'destroy'])->name('destroy');
+            });
+        });
+
+        Route::group([ 'prefix' => 'attributes', 'as' => 'attributes.' ], function ()
+        {
+            Route::get('', [AttributesController::class, 'index'])->name('index');
+            Route::get('create', [AttributesController ::class, 'create'])->name('create');
+            Route::post('store', [AttributesController ::class, 'store'])->name('store');
+                    
+            Route::get('search', [AttributesController::class, 'searchIndex'])->name('search');
+
+            Route::group([ 'prefix' => '{attribute}'], function ()
+            {
+                Route::post('update', [AttributesController ::class, 'update'])->name('update');
+                Route::get('edit', [AttributesController::class, 'edit'])->name('edit');
+                Route::delete('destroy', [AttributesController::class, 'destroy'])->name('destroy');
             });
         });
 

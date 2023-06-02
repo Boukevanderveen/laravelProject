@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="productform" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+            <form method="post" name="productform" action="{{ route('admin.products.store') }}"  onsubmit="doSubmit()" enctype="multipart/form-data">
 
                 <div class="row mb-3 mt-5">
                     <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
@@ -26,6 +26,13 @@
                     <label for="categories[]" class="col-md-4 col-form-label text-md-end">Categorieën:</label>
                     <div class="col-md-5">
                         <select class="js-example-basic-multiple" id="categories[]" name="categories[]" multiple="multiple">
+                            @if(null !== old('categories'))
+                            @foreach(old('categories') as $categoryid)
+                            <option  selected value="{{ $categoryid }}">{{ \App\Models\ProductCategory::find($categoryid)->name }}</option>
+                            @endforeach
+                            @else
+                            
+                            @endif
                             @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
@@ -33,6 +40,18 @@
                         @if ($errors->has('category'))
                         <div class="invalid-feedback">{{ $errors->first('category') }}</div>
                         @endif
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="typeid" class="col-md-4 col-form-label text-md-end">Type:</label>
+                    <div class="col-md-5">
+                        <select class="form-select" name="typeid" id="typeid" aria-label="Default select example"   autofocus>
+                            <option value="">Geen</option>
+                            @foreach ($types as $type)
+                            <option @if(old('typeid') == $type->id) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -50,7 +69,7 @@
                 <div class="row mb-3">
                     <label for="price" class="col-md-4 col-form-label text-md-end">Prijs: €</label>
                     <div class="col-md-5">
-                        <input class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}"
+                        <input class="form-control @error('price') is-invalid @enderror" value="{{str_replace('.', ',', old('price')) }}"
                             type="text" id="price" name="price" autofocus>
                         @if ($errors->has('price'))
                             <div class="invalid-feedback">{{ $errors->first('price') }}</div>
@@ -62,7 +81,7 @@
                     <label for="discount_price" class="col-md-4 col-form-label text-md-end">Kortingsprijs: €</label>
                     <div class="col-md-5">
                         <input class="form-control @error('discount_price') is-invalid @enderror"
-                            value="{{ old('discount_price') }}" type="text" id="discount_price" name="discount_price" autofocus>
+                            value="{{str_replace('.', ',', old('discount_price')) }}" type="text" id="discount_price" name="discount_price" autofocus>
                         @if ($errors->has('discount_price'))
                             <div class="invalid-feedback">{{ $errors->first('discount_price') }}</div>
                         @endif
@@ -108,10 +127,9 @@
                 <div class="row mb-3">
                     <label for="description" class="col-md-4 col-form-label text-md-end">Beschrijving:</label>
                     <div class="col-md-5">
-                        <textarea id="editor4" class="form-control @error('description') is-invalid @enderror"
-                        id="description" name="description" autofocus>{{ old('description') }}</textarea>
+                        <textarea id="editor4" class="form-control @error('description') is-invalid @enderror" id="description" name="description" autofocus>{{old('description')}}</textarea>
                         @if ($errors->has('description'))
-                            <div class="invalid-feedback">{{ $errors->first('description') }}</div>
+                        <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                         @endif
                     </div>
                 </div>
@@ -128,17 +146,31 @@
             </form>
         </div>
     </div>
+
     <script>
-            ClassicEditor
-        .create( document.querySelector( '#editor4' ) )
-        .catch( error => {
-            console.error( error );
-        } );
+    function doSubmit(){
+    var price = document.getElementById('price').value.replace(",",".");
+    var discount_price = document.getElementById('discount_price').value.replace(",",".");
+
+    document.getElementById('price').value = document.getElementById('price').value.replace(",",".");
+    document.getElementById('discount_price').value = document.getElementById('discount_price').value.replace(",",".");
+    }
+$(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+        $(".js-example-basic-multiple").select2({ width: '100%' });      
+
+    });
+
+        ClassicEditor
+    .create( document.querySelector( '#editor4' ) )
+    .catch( error => {
+        console.error( error );
+    } );
     </script>
     <style>
-        .ck-editor__editable[role="textbox"] {
-            /* editing area */
-            min-height: 200px;
-        }
+    .ck-editor__editable[role="textbox"] {
+        /* editing area */
+        min-height: 200px;
+    }
     </style>
 @endsection

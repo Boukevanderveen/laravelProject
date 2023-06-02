@@ -1,18 +1,33 @@
 <div>
     <h1>[LOGO]</h1>
     <h1>Bestelling</h1>
+<div style="    
+width: 100%;
+overflow: hidden;">
 
-    <div style="width: 100%; height: 15%">
-        <div style="float: left;">
-            <p>{{ $order->name }}</p>
-            <p>{{ $order->street_number }} {{ $order->addition }}</p>
-            <p>{{ $order->zipcode }}, {{ $order->city }}</p>
+    <div style="width: 500px; float: left;">
+        <div>
+            <h2>Factuuradres</h2>
+            <p>{{ $invoiceAdress->name }}</p>
+            <p>{{ $invoiceAdress->house_number }} {{ $invoiceAdress->addition }}</p>
+            <p>{{ $invoiceAdress->zipcode }}, {{ $invoiceAdress->city }}</p>
+            <p><b>Bestellingnummer:</b> {{ $invoiceAdress->id }}</p>
+            <p>Besteldatum: {{ $invoiceAdress->created_at->format('d-m-Y') }}</p>
         </div>
-        <div style="float: right;">
-            <p><b>Bestellingnummer:</b> {{ $order->id }}</p>
-            <p>Besteldatum: {{ $order->created_at->format('d-m-Y') }}</p>
-        </div>
+
     </div>
+    <div style="overflow: hidden;">
+        <div >
+            <h2>Afleveradres</h2>
+            <p>{{ $shipmentAdress->name }}</p>
+            <p>{{ $shipmentAdress->house_number }} {{ $shipmentAdress->addition }}</p>
+            <p>{{ $shipmentAdress->zipcode }}, {{ $shipmentAdress->city }}</p>
+            <p><b>Bestellingnummer:</b> {{ $shipmentAdress->id }}</p>
+            <p>Besteldatum: {{ $shipmentAdress->created_at->format('d-m-Y') }}</p>
+        </div>
+
+    </div>
+</div>
     <h2>Producten</h2>
 
     <table style="width: 100%">

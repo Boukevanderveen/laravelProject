@@ -13,13 +13,15 @@
 @foreach($adresses as $adress)
 <table id="cart" class="table table-hover table-condensed">
     <tbody>
-    <div role="button" class="col card" onclick="location.href='{{ route('adresses.show', $adress) }}';">
+    <div class="col card">
             <div class="row mt-2">
                 <div class="col-10">
                     <h6>{{$adress->name}}</h6>
+                    <h6>{{$adress->company}}</h6>
+
                     <h6>{{$adress->street}} {{$adress->house_number}}{{$adress->addition}}</h6>
                     <h6>{{$adress->zipcode}} {{$adress->city}}</h6>
-
+                    <h6>{{$adress->phone_number}} {{$adress->email}}</h6>
                 </div>
                 <div class="col-1">
                     <a href="{{ route('adresses.edit', $adress) }}"><button type="button" btn btn-link

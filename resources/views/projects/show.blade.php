@@ -6,6 +6,6 @@
 Gemaakt op: {{$project->created_at->format('d-m-Y')}}
 <br>
 <br>
-<a href="{{ route('projects.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
+<a href="{{ route('projects.index') }}"><button type="button" class="btn btn-primary mb-3">Ga terug</button></a>
 
 @endsection 

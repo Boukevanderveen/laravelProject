@@ -10,6 +10,15 @@ class OrderDetail extends Model
     protected $table = 'order_details';
 
     use HasFactory;
+    protected $fillable = [
+        'quantity',
+        'product_name',
+        'product_price',
+        'product_picture',
+        'vat',
+        'product_id',
+        'order_id',
+    ];
 
     public function product()
     {

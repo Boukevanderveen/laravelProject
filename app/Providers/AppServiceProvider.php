@@ -27,6 +27,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (!Collection::hasMacro('paginate')) {
+
+            Collection::macro('paginate', 
+                function ($perPage = 15, $page = null, $options = []) {
+                $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+                return (new LengthAwarePaginator(
+                    $this->forPage($page, $perPage), $this->count(), $perPage, $page, $options))
+                    ->withPath('');
+            });
+    }
+    
         Validator::extend('greater_than_field', function($attribute, $value, $parameters, $validator) {
             $min_field = $parameters[0];
             $data = $validator->getData();

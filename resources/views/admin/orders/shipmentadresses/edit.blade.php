@@ -15,10 +15,10 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"  aria-current="page" href="{{ route('admin.orders.edit', $order) }}">Bewerk gegevens</a>
+        <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"  aria-current="page" href="{{ route('admin.orders.edit', $order) }}">Overzicht</a>
     </li>
     <li class="nav-item">
-        <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"   aria-current="page" href="{{ route('admin.orders.shipmentadresses.edit', [$order, $shipmentAdress]) }}">Bezorgadres</a>
+        <a  class="nav-link active"   aria-current="page" href="{{ route('admin.orders.shipmentadresses.edit', [$order, $shipmentAdress]) }}">Bezorgadres</a>
     <li class="nav-item">
         <a  class="nav-link {{ Str::endsWith(url()->current(), 'closed') ? 'active' : '' }}"   aria-current="page" href="{{ route('admin.orders.invoiceadresses.edit', [$order, $invoiceAdress]) }}">Factuuradres</a>
     </li>

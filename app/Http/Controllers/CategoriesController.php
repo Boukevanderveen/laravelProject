@@ -31,7 +31,9 @@ class CategoriesController extends Controller
     {
         $this->authorize('create', $category);
         $Categories = new Category;
-        $Categories->name = $request->name;
+        $nameAsVar = "name";
+        //dd($request->$nameAsVar);
+        $Categories->name = $request->$nameAsVar;
         $Categories->save();
         return redirect('admin/categories')->with('message', 'Categorie succesvol gecreëerd.'); 
     }

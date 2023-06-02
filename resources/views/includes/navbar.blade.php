@@ -19,14 +19,16 @@
         <ul class="navbar-nav mr-auto">
         <a class="nav-link" href="{{ route('projects.index') }}">Projecten</a>
         </ul>
-        <ul class="navbar-nav mr-auto">
-            <a class="nav-link" href="{{ route('products.index') }}">Producten</a>
-        </ul>
-        <ul class="navbar-nav mr-auto">
-            <a class="nav-link" href="{{ route('orders.index') }}">Mijn bestellingen</a>
-        </ul>
-        <ul class="navbar-nav mr-auto">
-            <a class="nav-link" href="{{ route('adresses.index') }}">Mijn adressen</a>
+        <ul class="navbar-nav mr-auto position-relative">
+        
+            <a id="navbarDropdownProducts" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                Producten
+            </a>
+            <div  class="dropdown-menu dropdown-menu " aria-labelledby="navbarDropdownProducts">
+                @foreach($productCategories as $category)
+                  <a class="dropdown-item" href="{{ route('products.categories.index', $category) }}">{{$category->name}}</a>
+                @endforeach
+            </div>
         </ul>
 
           <!-- Right Side Of Navbar -->
@@ -59,11 +61,14 @@
                           {{ Auth::user()->name }}
                       </a>
                       <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <form action="/logout" method="POST">
-                            <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">ee</a>
-                            @csrf
-                        </form>
+                            <a class="dropdown-item" href="{{ route('orders.index') }}">Mijn bestellingen</a>
+                            <a class="dropdown-item" href="{{ route('adresses.index') }}">Mijn adressen</a>
+                            <form action="/logout" method="POST">
+                                <a class="dropdown-item" href="#" onclick="this.parentNode.submit()">Uitloggen</a>
+                                @csrf
+                            </form>
                       </div>
+                      
                   </li>
               @endguest
           </ul>

@@ -7,7 +7,7 @@
         <div class="col-4">
             <form action="{{ route('admin.articles.search') }}">
                 <div class="input-group">
-                    <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                    <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken op titel" name="search_term" id="search_term">
                     <div class="input-group-append">
                         <button class="btn" type="submit">
                             <i class="fa fa-search"></i>

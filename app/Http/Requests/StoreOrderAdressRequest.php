@@ -14,7 +14,7 @@ class StoreOrderAdressRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::user()->isAdmin;
+        return true;
     }
 
     /**
@@ -25,7 +25,7 @@ class StoreOrderAdressRequest extends FormRequest
     public function rules()
     {   
         return [
-            'name' => 'required|alpha|max:55',
+            'name' => 'required|max:55',
             'company_name'=>'nullable|max:55',
             'street'=>'required|alpha|max:70',
             'house_number'=>'required|integer|max:19999',
@@ -41,7 +41,6 @@ class StoreOrderAdressRequest extends FormRequest
     {
         return [
             'name.required' => 'Het veld naam is verplicht',
-            'name.alpha' => 'Het veld naam mag alleen letters bevatten',
             'name.max' => 'Het veld naam mag niet langer dan 55 letters zijn',
             'company_name.max' => 'Het veld bedrijfsnaam mag niet langer dan 55 letters zijn',
             'street.required' => 'Het veld straatnaam is verplicht',

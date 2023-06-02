@@ -3,7 +3,13 @@
 @section('content')
 @if(session('cart'))
 <div class="row">
+<div class="col-12">
+<h1>Winkelmandje</h1>
+</div>
+</div>
+<div class="row">
 <div class="col-9">
+<div class="card">
 <table id="cart" class="table table-hover table-condensed">
     <thead>
         <tr>
@@ -87,12 +93,11 @@
                                     class="fa fa-trash"></i></button>
                         </form>
                     </td>
-
-
                 </tr>
             @endforeach   
     </tbody>
 </table>
+</div>
 </div>
 <div class="col-3">
     <ul class="list-group border">

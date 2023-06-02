@@ -14,9 +14,12 @@ class OrderAdress extends Model
         'name',
         'street',
         'house_number',
+        'addition',
         'city',
+        'zipcode',
         'phone_number',
-        'type'
+        'type',
+        'email',
     ];
 
     use HasFactory;

@@ -96,7 +96,7 @@ class AdressesController extends Controller
 
     function adminStore(StoreAdressRequest $request)
     {
-        $user = User::where('name', 'like', '%' . $request->user)->first();
+        $targetUser = User::where('name', 'like', '%' . $request->user)->first();
         if(isset($user)){
             $Adress = new Adress;
             $Adress->name = $request->name;
@@ -108,7 +108,7 @@ class AdressesController extends Controller
             $Adress->zipcode = $request->zipcode;
             $Adress->city = $request->city;
             $Adress->email = $request->email;
-            $Adress->user_id = $user->id;
+            $Adress->user_id = $targetUser->id;
             $Adress->save(); 
             return redirect('admin/adresses')->with('message', 'Adres succesvol aangemaakt.');
         }

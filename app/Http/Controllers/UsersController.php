@@ -113,8 +113,12 @@ class UsersController extends Controller
     function adminDestroy(Request $request, User $user)
     {
         $this->authorize('delete', $user);
-        $user->delete();
-        return back()->with('message', 'Gebruiker succesvol verwijderd.');
+        try {
+            $user->delete();
+            return back()->with('message', 'Gebruiker succesvol verwijderd.');
+          } catch (\Exception $e) {
+            return back()->with('error', 'Er is iets mis gegaan bij het verwijderen van deze gebruiker.');
+          }
     }
 
     public function searchIndex(User $user, Request $request)

@@ -5,6 +5,11 @@
             <h1>Bewerk product</h1>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            @include('includes.admin.producttabs')
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
         $('.js-example-basic-multiple').select2();
@@ -14,7 +19,7 @@
     </script>
     <div class="row">
         <div class="col-12 card">
-            <form method="post" name="productform" action="{{ route('admin.products.update', $product ) }}" enctype="multipart/form-data">
+            <form id="producteditform" method="post" name="productform" action="{{ route('admin.products.update', $product ) }}" onsubmit="doSubmit()" enctype="multipart/form-data">
 
                 <div class="row mb-3 mt-5">
                     <label for="name" class="col-md-4 col-form-label text-md-end">Naam:</label>
@@ -30,17 +35,40 @@
                     <label for="categories[]" class="col-md-4 col-form-label text-md-end">Categorieën:</label>
                     <div class="col-md-5">
                         <select class="js-example-basic-multiple" id="categories[]" name="categories[]" multiple="multiple">
+                            @if(null !== old('categories'))
+                            @foreach(old('categories') as $categoryid)
+                            <option  selected value="{{ $categoryid }}">{{ \App\Models\ProductCategory::find($categoryid)->name }}</option>
+                            @endforeach
+                            @else
                             @foreach($product->categories as $category)
                             <option  selected value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
+                            @endif
                             @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
+
                         </select>
 
                         @if ($errors->has('category'))
                         <div class="invalid-feedback">{{ $errors->first('category') }}</div>
                         @endif
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="typeid" class="col-md-4 col-form-label text-md-end">Type:</label>
+                    <div class="col-md-5">
+                        <select class="form-select" name="typeid" id="typeid" aria-label="Default select example"   autofocus>
+                            <option value="">Geen</option>
+                            @foreach ($types as $type)
+                            <option @if($product->type_id == $type->id) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
+                            @endforeach
+                            @if(old('typeid') !== null)
+                            @foreach ($types as $type)
+                            <option @if(old('typeid') == $type->id) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
+                            @endforeach
+                            @endif
+                        </select>
                     </div>
                 </div>
     
@@ -57,7 +85,7 @@
                 <div class="row mb-3">
                     <label for="price" class="col-md-4 col-form-label text-md-end">Prijs: €</label>
                     <div class="col-md-5">
-                        <input class="form-control @error('price') is-invalid @enderror" value="{{old('price', str_replace('.', ',', $product->price))}}" type="text" id="price" name="price" autofocus>
+                        <input class="form-control @error('price') is-invalid @enderror" value="{{str_replace('.', ',',old('price', $product->price))}}" type="text" id="price" name="price" autofocus>
                         @if ($errors->has('price'))
                         <div class="invalid-feedback">{{ $errors->first('price') }}</div>
                         @endif
@@ -67,7 +95,7 @@
                 <div class="row mb-3">
                     <label for="discount_price" class="col-md-4 col-form-label text-md-end">Kortingsprijs: €</label>
                     <div class="col-md-5">
-                        <input class="form-control @error('discount_price') is-invalid @enderror" value="{{old('discount_price', str_replace('.', ',', $product->discount_price))}}" type="text" id="discount_price" name="discount_price" autofocus>
+                        <input class="form-control @error('discount_price') is-invalid @enderror" value="{{str_replace('.', ',',old('discount_price', $product->discount_price))}}" type="text" id="discount_price" name="discount_price" autofocus>
                         @if ($errors->has('discount_price'))
                         <div class="invalid-feedback">{{ $errors->first('discount_price') }}</div>
                         @endif
@@ -141,6 +169,15 @@
         </div>
     </div>
     <script>
+
+    function doSubmit(){
+    var price = document.getElementById('price').value.replace(",",".");
+    var discount_price = document.getElementById('discount_price').value.replace(",",".");
+
+    document.getElementById('price').value = document.getElementById('price').value.replace(",",".");
+    document.getElementById('discount_price').value = document.getElementById('discount_price').value.replace(",",".");
+    }
+
         ClassicEditor
     .create( document.querySelector( '#editor4' ) )
     .catch( error => {

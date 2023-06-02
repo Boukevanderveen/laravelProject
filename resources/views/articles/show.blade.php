@@ -15,5 +15,5 @@ Gepubliceerd op: {{ date('d-m-Y', strtotime($article->published_at)) }}
 <br>
 Categorie: {{$article->category}}
 <br>
-<a href="{{ route('articles.index') }}"><button type="button" class="btn mb-3">Ga terug</button></a>
+<a href="{{ route('articles.index') }}"><button type="button" class="btn btn-primary mb-3">Ga terug</button></a>
 @endsection 

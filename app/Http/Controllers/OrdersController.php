@@ -30,8 +30,9 @@ class OrdersController extends Controller
     function show(Order $order)
     {
         $this->authorize('viewAny', $order);
-
-        return view('orders.show', ['order' => $order]);
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        return view('orders.show', ['order' => $order, 'shipmentAdress' => $shipmentAdress, 'invoiceAdress' => $invoiceAdress]);
     }
 
 
@@ -78,15 +79,35 @@ class OrdersController extends Controller
         return back()->with('message', 'Bestelling succesvol verwijderd.');
     }
 
-    public function adressesDeliveryCreate(Request $request)
+    public function adressesDeliveryCreate()
     {
-        $adresses = Adress::where('user_id', Auth::user()->id)->get();
+        $adresses = Adress::where('user_id', Auth::user()->id)->latest()->paginate();
         return view('orders.adresses.delivery.create', ['adresses' => $adresses]);
     }
 
-    public function adressesInvoicesCreate(StoreOrderAdressRequest $request)
+    public function adressesInvoicesStore(StoreOrderAdressRequest $request)
     {
-        return view('orders.adresses.invoices.create', ['shipmentAdressRequest' => $request->all()]);
+        $orderadres[] = [
+            "company_name" => $request->company_name,
+            "name" => $request->name,
+            "street" => $request->street,
+            "house_number" => $request->house_number,
+            "addition" => $request->addition,
+            "zipcode" => $request->zipcode,
+            "city" => $request->city,
+            "phone_number" => $request->phone_number,
+            "email" => $request->email
+        ];
+
+        session()->put('orderadres', $orderadres);
+
+        return redirect('/orders/adresses/invoices/create');
+    }
+    public function adressesInvoicesCreate()
+    {
+        $adresses = Adress::where('user_id', Auth::user()->id)->latest()->paginate();
+        
+        return view('orders.adresses.invoices.create', ['adresses' => $adresses ]);
     }
     
     public function store(StoreOrderAdressRequest $request)
@@ -121,6 +142,7 @@ class OrdersController extends Controller
                 $OrderAdress->$key = $value;
             }
         }
+        $OrderAdress->type = "shipmentadress";
         $OrderAdress->order_id = $Order->id;
         $OrderAdress->save();
 
@@ -201,7 +223,7 @@ class OrdersController extends Controller
     function productsIndex(Order $order)
     {
         $products = Product::All();
-        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
         $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
         return view('admin.orders.products.index', ['order' => $order, 'products' => $products,'invoiceAdress' => $invoiceAdress,'shipmentAdress' => $shipmentAdress]);
     }
@@ -255,7 +277,9 @@ class OrdersController extends Controller
     {
         $this->authorize('update', $order);
         $product = Product::find($orderdetail->product_id);
-        return view('admin.orders.products.edit', ['order' => $order, 'product' => $product, 'orderdetail' => $orderdetail]);
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        return view('admin.orders.products.edit', ['order' => $order, 'product' => $product, 'orderdetail' => $orderdetail, 'shipmentAdress'=> $shipmentAdress, 'invoiceAdress'=> $invoiceAdress]);
     }
 
     function productsUpdate(Request $request, Order $order, OrderDetail $orderdetail)
@@ -282,7 +306,7 @@ class OrdersController extends Controller
 
     function invoiceAdressIndex(Order $order)
     {
-        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
         $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
         return view('admin.orders.invoiceadresses.index', ['order' => $order, 'invoiceAdress'=> $invoiceAdress]);
     }
@@ -298,15 +322,17 @@ class OrdersController extends Controller
         $invoiceadress->addition = $request->addition;
         $invoiceadress->zipcode = $request->zipcode;
         $invoiceadress->city = $request->city;
+        $invoiceadress->email = $request->email;
         $invoiceadress->order_id = $order->id;
+
         $invoiceadress->update();
-        return back()->with('message', 'Factuuradres succesvol bijgewerkt');
+        return back()->with('message', 'Factuuradres succesvol bewerkt');
     }
 
     function shipmentAdressEdit(Order $order, OrderAdress $shipmentadress)
     {
         $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
-        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
         return view('admin.orders.shipmentadresses.edit', ['order' => $order, 'shipmentAdress'=> $shipmentAdress, 'invoiceAdress'=> $invoiceAdress]);
     }
     
@@ -321,9 +347,10 @@ class OrdersController extends Controller
         $shipmentadress->addition = $request->addition;
         $shipmentadress->zipcode = $request->zipcode;
         $shipmentadress->city = $request->city;
+        $shipmentadress->email = $request->email;
         $shipmentadress->order_id = $order->id;
         $shipmentadress->update();
-        return back()->with('message', 'Bezorgadres succesvol bijgewerkt');
+        return back()->with('message', 'Bezorgadres succesvol bewerkt');
     }
 
     function invoiceAdressEdit(Order $order, OrderAdress $shipmentadress)
@@ -338,7 +365,9 @@ class OrdersController extends Controller
     {
         $this->authorize('view', $order);
 
-        $pdf = Pdf::loadView('pdf.orders.invoice', ['order' => $order]);
+        $invoiceAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'invoiceadress' . '%')->first();
+        $shipmentAdress = OrderAdress::where('order_id', $order->id)->where('type', 'like', '%' . 'shipmentadress' . '%')->first();
+        $pdf = Pdf::loadView('pdf.orders.invoice', ['order' => $order, 'shipmentAdress' => $shipmentAdress, 'invoiceAdress' => $invoiceAdress]);
         return $pdf->download('invoice.pdf');
     }
 

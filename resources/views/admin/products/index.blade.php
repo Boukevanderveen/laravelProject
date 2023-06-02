@@ -7,7 +7,7 @@
         <div class="col-4 text-end">
             <form action="{{ route('admin.products.search') }}">
                 <div class="input-group">
-                    <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken" name="search_term" id="search_term">
+                    <input @isset($search_term) value="{{$search_term}}" @endisset type="text" class="form-control" placeholder="Zoeken op naam" name="search_term" id="search_term">
                     <div class="input-group-append">
                         <button class="btn" type="submit">
                             <i class="fa fa-search"></i>
@@ -31,6 +31,7 @@
                         <th scope="col">Kortingsprijs</th>
                         <th scope="col">Voorraad</th>
                         <th scope="col">Categorieën</th>
+                        <th scope="col">Type</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -51,6 +52,12 @@
                             {{ $category->name }},
                             @endforeach
                             </td>
+                            @if(isset($product->type))
+                            <td>{{ $product->type->name }}</td>
+                            @else
+                            <td>Geen</td>
+                            @endif
+
                                 <form method="post" action="{{ route('admin.products.destroy', $product) }}"> @csrf @method('delete')
                                     <td class="text-end"><a href="{{ route('admin.products.edit', $product) }}"><button type="button" btn btn-link
                                         class="btn btn-link link-dark text-end"><i class="fa fa-pencil"></i></button></a>

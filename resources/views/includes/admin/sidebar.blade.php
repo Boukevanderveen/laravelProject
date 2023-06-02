@@ -12,10 +12,16 @@
         <li class="list-group-item">Producten</li>
     </a>
     <a class="text-decoration-none" href="{{ route('admin.productcategories.index') }}">
-        <li class="list-group-item">Product Categorieën</li>
+        <li class="list-group-item">Product categorieën</li>
+    </a>
+    <a class="text-decoration-none" href="{{ route('admin.types.index') }}">
+        <li class="list-group-item">Product types</li>
+    </a>
+    <a class="text-decoration-none" href="{{ route('admin.attributes.index') }}">
+        <li class="list-group-item">Attributen</li>
     </a>
     <a class="text-decoration-none" href="{{ route('admin.articles.index') }}">
-        <li class="list-group-item">Arikelen</li>
+        <li class="list-group-item">Artikelen</li>
     </a>
     <a class="text-decoration-none" href="{{ route('admin.projects.index') }}">
         <li class="list-group-item">Projecten</li>
@@ -33,6 +39,6 @@
         <li class="list-group-item"> Taken</li>
     </a>
     <a class="text-decoration-none" href="{{ route('admin.statuses.index') }}">
-        <li class="list-group-item"> Statusen</li>
+        <li class="list-group-item"> Statussen</li>
     </a>
 </ul>

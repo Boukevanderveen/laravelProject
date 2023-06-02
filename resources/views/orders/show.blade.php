@@ -50,10 +50,16 @@
         <h6>{{date('d-m-Y', strtotime($order->created_at))}}</h6>
     </div>
     <div class="col-3">
-        <h6><b>Adresgegevens</b></h6>
-        <h6>{{$order->name}}</h6>
-        <h6>{{$order->street}} {{$order->house_number}}{{$order->addition}}</h6>
-        <h6>{{$order->zipcode}} {{$order->city}}</h6>
+        <h6><b>Afleveradres</b></h6>
+        <h6>{{$shipmentAdress->name}}</h6>
+        <h6>{{$shipmentAdress->street}} {{$shipmentAdress->house_number}}{{$shipmentAdress->addition}}</h6>
+        <h6>{{$shipmentAdress->zipcode}} {{$shipmentAdress->city}}</h6>
+    </div>
+    <div class="col-3">
+        <h6><b>Factuuradres</b></h6>
+        <h6>{{$invoiceAdress->name}}</h6>
+        <h6>{{$invoiceAdress->street}} {{$invoiceAdress->house_number}}{{$invoiceAdress->addition}}</h6>
+        <h6>{{$invoiceAdress->zipcode}} {{$invoiceAdress->city}}</h6>
     </div>
     <div class="col-3">
         <h6><b>Kostenoverzicht</b></h6>

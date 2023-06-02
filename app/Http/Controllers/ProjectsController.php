@@ -172,7 +172,11 @@ class ProjectsController extends Controller
 
     function adminDestroy(Request $request, Project $project)
     {
-        $this->authorize('delete', $project);
+        $this->authorize('delete', $project);        
+        $projectTasks = Task::where('project_id', $project->id);
+        $projectTasks->delete();
+        $projectMembers = ProjectUser::where('project_id', $project->id);
+        $projectMembers->delete();
         $project->delete();
         return back()->with('message', 'Project succesvol verwijderd.');
     }
